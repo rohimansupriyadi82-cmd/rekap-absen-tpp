@@ -516,6 +516,36 @@ tbody td{color:#183452!important;background-clip:padding-box}
 @media print{.hero{display:none!important}}
 </style>
 
+
+<style id="backup-restore-style">
+.backup-card .backup-status{font-size:11px;line-height:1.5;padding:9px 10px;border-radius:10px;background:#075b60;color:#d8fffa;margin-bottom:9px;border:1px solid #22a99c55}
+.backup-card .backup-small{font-size:10px;line-height:1.6;color:#b5e2e1;margin-top:9px}
+.backup-card .backup-history-title{font-size:11px;font-weight:800;color:#e4ffff;margin:13px 0 7px}
+.backup-history{display:flex;flex-direction:column;gap:5px;max-height:145px;overflow:auto}
+.backup-history-item{font-size:10px;line-height:1.5;background:#003448;border:1px solid #1c6274;border-radius:9px;padding:7px;color:#d8f4f6;display:flex;justify-content:space-between;gap:6px}
+.backup-history-item span{opacity:.85}.backup-history-empty{font-size:10px;color:#b5e2e1;padding:5px}
+@media print{#backupPanel,.side-label:has(+ #backupPanel){display:none!important}}
+</style>
+<style id="weekly-reminder-style">
+.weekly-reminder{display:flex;align-items:center;gap:18px;padding:20px 22px;margin:0 0 18px;border-radius:20px;background:linear-gradient(115deg,#fff8e7,#fff 48%,#e9fbf7);border:1px solid #f1d99b;box-shadow:0 12px 30px rgba(126,94,23,.08);position:relative;overflow:hidden}
+.weekly-reminder:after{content:"";position:absolute;right:-48px;top:-60px;width:180px;height:180px;border:24px solid rgba(20,169,141,.07);border-radius:50%;pointer-events:none}
+.weekly-reminder-icon{width:58px;height:58px;flex:0 0 58px;display:grid;place-items:center;border-radius:17px;background:linear-gradient(145deg,#ffe7a5,#ffd26b);color:#805500;font-size:23px;box-shadow:0 8px 18px #d9a23a28}
+.weekly-reminder-content{flex:1;min-width:0}
+.weekly-reminder-kicker{font-size:10px;font-weight:900;letter-spacing:1.2px;color:#987019;margin-bottom:5px}
+.weekly-reminder-content h3{margin:0 0 5px;font-size:16px;color:#18394b;letter-spacing:-.3px}
+.weekly-reminder-content p{margin:0;font-size:11px;color:#6e7e87;line-height:1.65;max-width:700px}
+.weekly-reminder-checks{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
+.weekly-reminder-checks span{font-size:10px;font-weight:800;color:#197869;background:#e5f6f1;border:1px solid #cdebe2;border-radius:100px;padding:6px 9px}
+.weekly-reminder-actions{display:flex;flex-direction:column;gap:7px;min-width:170px;z-index:1}
+.weekly-reminder-actions button{border:0;border-radius:10px;padding:9px 11px;font:700 11px 'Plus Jakarta Sans',sans-serif;cursor:pointer;white-space:nowrap;transition:.15s}
+.weekly-reminder-actions button:hover{transform:translateY(-1px);filter:brightness(1.04)}
+.weekly-reminder-primary{background:linear-gradient(110deg,#15b99b,#078b78);color:white}
+.weekly-reminder-secondary{background:#edf6f3;color:#22675d;border:1px solid #d6eae4!important}
+.weekly-reminder-snooze{background:#fff;border:1px solid #e8e8dc!important;color:#71818a}
+@media(max-width:950px){.weekly-reminder{align-items:flex-start;flex-wrap:wrap}.weekly-reminder-actions{flex-direction:row;flex-wrap:wrap;min-width:0;width:100%}.weekly-reminder-actions button{flex:1}}
+@media(max-width:600px){.weekly-reminder{padding:15px;gap:12px;border-radius:15px}.weekly-reminder-icon{width:46px;height:46px;flex-basis:46px;border-radius:13px;font-size:19px}.weekly-reminder-content h3{font-size:14px}.weekly-reminder-content p{font-size:10px}.weekly-reminder-actions button{min-width:130px}}
+@media print{.weekly-reminder{display:none!important}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -559,12 +589,36 @@ tbody td{color:#183452!important;background-clip:padding-box}
  <div class="side-label">Daftar pegawai</div>
  <input id="staffSearch" placeholder="Cari nama pegawai..." style="border:1px solid #ffffff20;background:#ffffff10;color:#fff;padding:10px;border-radius:9px;font-size:12px" oninput="renderStaff()">
  <div class="list-wrap" id="staffList"></div>
- <div class="side-footer">Autosave aktif • Data tersimpan di perangkat ini</div>
+ 
+ <div class="side-label"><i class="fa-solid fa-shield-halved"></i> Backup & Restore</div>
+ <div class="side-card backup-card" id="backupPanel">
+  <div class="backup-status" id="backupStatus"><i class="fa-solid fa-clock"></i> Memeriksa backup mingguan…</div>
+  <button class="btn btn-primary btn-full" onclick="backupNow(true)"><i class="fa-solid fa-cloud-arrow-down"></i> Backup & Unduh Sekarang</button>
+  <button class="btn btn-outline btn-full" style="margin-top:7px" onclick="document.getElementById('restoreFile').click()"><i class="fa-solid fa-rotate-left"></i> Restore dari File Backup</button>
+  <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" onchange="restoreBackupFile(event)">
+  <div class="backup-small">Backup mingguan otomatis disimpan di browser setiap kali aplikasi dibuka, jika sudah 7 hari sejak backup terakhir.</div>
+  <div class="backup-history-title">Riwayat Backup Lokal</div><div id="backupHistory" class="backup-history"></div>
+ </div>
+<div class="side-footer">Autosave aktif • Data tersimpan di perangkat ini</div>
 </aside>
 <main class="main">
  <div class="topbar"><div><div class="eyebrow">Administrasi sekolah</div><h2>Rekapitulasi Absensi Manual</h2></div>
   <div class="top-actions"><button class="btn btn-light" onclick="exportExcel()"><i class="fa-solid fa-file-excel"></i> Ekspor Excel</button><button class="btn btn-light" onclick="resetData()"><i class="fa-solid fa-rotate-left"></i> Reset Data</button></div>
  </div>
+ <section id="weeklyReminder" class="weekly-reminder" style="display:none" aria-live="polite">
+  <div class="weekly-reminder-icon"><i class="fa-solid fa-calendar-check"></i></div>
+  <div class="weekly-reminder-content">
+   <div class="weekly-reminder-kicker"><i class="fa-solid fa-bell"></i> PENGINGAT MINGGUAN</div>
+   <h3>Waktunya Backup & Cetak Absensi Manual</h3>
+   <p>Amankan data absensi dengan membuat backup, lalu cetak lembar absensi manual untuk arsip. Jangan sampai data dan dokumen mingguan terlewat.</p>
+   <div class="weekly-reminder-checks"><span><i class="fa-solid fa-shield-halved"></i> Backup data aplikasi</span><span><i class="fa-solid fa-print"></i> Cetak absensi manual</span></div>
+  </div>
+  <div class="weekly-reminder-actions">
+   <button class="weekly-reminder-primary" onclick="backupNow(true)"><i class="fa-solid fa-cloud-arrow-down"></i> Backup Sekarang</button>
+   <button class="weekly-reminder-secondary" onclick="weeklyReminderDone()"><i class="fa-solid fa-check"></i> Sudah dilakukan</button>
+   <button class="weekly-reminder-snooze" onclick="weeklyReminderSnooze()"><i class="fa-regular fa-clock"></i> Ingatkan besok</button>
+  </div>
+ </section>
  <section class="hero"><div><h3>Rekap Kehadiran Guru & Tenaga Kependidikan</h3><p>Kelola data pegawai, periode laporan, dan cetak lembar absensi dengan mudah.</p></div><div class="hero-date"><div><i class="fa-regular fa-calendar"></i> <span id="periodHero"></span></div><div class="clock-block"><span class="live-date" id="liveDate">Memuat tanggal…</span><span class="live-time" id="liveTime">00:00:00</span></div></div></section>
  <div class="stats">
   <div class="stat"><div class="stat-top"><span>Total Pegawai</span><span class="stat-icon"><i class="fa-solid fa-users"></i></span></div><strong id="totalStaff">0</strong><small>Guru & tenaga kependidikan</small></div>
@@ -1577,6 +1631,325 @@ body.view-sptjm .sidebar>:not(.brand):not(.sp-menu-wrap):not(.side-footer){displ
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })(typeof window !== 'undefined' ? window : globalThis);
 
+</script>
+<script id="backup-restore-module">
+(function(){
+ const DATA_KEY='absensiGTK_MuaraBakti01', BK_KEY='absensiGTK_backupHistory_v1', WEEK=7*24*60*60*1000, MAX=12;
+ const getHistory=()=>{try{return JSON.parse(localStorage.getItem(BK_KEY)||'[]')}catch{return []}};
+ const setHistory=x=>localStorage.setItem(BK_KEY,JSON.stringify(x.slice(0,MAX)));
+ function createBackup(reason){
+   let raw=localStorage.getItem(DATA_KEY);
+   if(!raw) raw=JSON.stringify(state);
+   const payload={app:'Absensi GTK • Kec. Babelan',format:'absensiGTK-backup',version:1,createdAt:new Date().toISOString(),reason,data:JSON.parse(raw)};
+   const h=getHistory();h.unshift({createdAt:payload.createdAt,reason,backup:payload});setHistory(h);
+   return payload;
+ }
+ function stamp(d){return new Date(d).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'})}
+ function download(payload){
+   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+   const url=URL.createObjectURL(blob),a=document.createElement('a');
+   const d=new Date(payload.createdAt),name=`Backup_AbsensiGTK_${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.json`;
+   a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ }
+ window.backupNow=function(downloadFile){
+   try{const b=createBackup('Backup manual');renderBackupHistory();notify('Backup berhasil dibuat dan disimpan.');if(downloadFile)download(b)}
+   catch(e){console.error(e);notify('Backup gagal dibuat. Pastikan ruang penyimpanan tersedia.')}
+ };
+ function weeklyCheck(){
+   const h=getHistory(),last=h[0]?.createdAt;
+   if(!last||Date.now()-new Date(last).getTime()>=WEEK){
+     try{const b=createBackup('Backup otomatis mingguan');renderBackupHistory();const status=document.getElementById('backupStatus');if(status)status.innerHTML='<i class="fa-solid fa-circle-check"></i> Backup mingguan otomatis tersimpan • '+stamp(b.createdAt); }
+     catch(e){console.warn('Backup mingguan gagal',e)}
+   }else{
+     const status=document.getElementById('backupStatus');if(status)status.innerHTML='<i class="fa-solid fa-shield-check"></i> Backup terakhir: '+stamp(last)+' • Backup mingguan berikutnya saat aplikasi dibuka setelah 7 hari.';
+   }
+ }
+ window.restoreBackupFile=function(ev){
+   const file=ev.target.files?.[0];if(!file)return;
+   const reader=new FileReader();
+   reader.onload=()=>{
+     try{
+       const b=JSON.parse(reader.result);
+       if(b.format!=='absensiGTK-backup'||!b.data||!Array.isArray(b.data.guru)||!b.data.attendance||!b.data.periode||!Array.isArray(b.data.hariAktif))throw new Error('Struktur file tidak sesuai');
+       if(!confirm('Pulihkan data dari backup '+(b.createdAt?stamp(b.createdAt):'ini')+'? Data saat ini akan diamankan dahulu sebagai backup sebelum restore.'))return;
+       createBackup('Backup otomatis sebelum restore');
+       state=b.data;save();render();renderBackupHistory();notify('Restore berhasil. Data absensi dipulihkan.');
+     }catch(err){console.error(err);notify('File backup tidak valid atau rusak. Data tidak diubah.')}
+     finally{ev.target.value=''}
+   };
+   reader.onerror=()=>{notify('File tidak dapat dibaca.');ev.target.value=''};
+   reader.readAsText(file);
+ };
+ window.restoreLocalBackup=function(index){
+   const h=getHistory(),b=h[index]?.backup;if(!b)return;
+   if(!confirm('Pulihkan backup lokal tanggal '+stamp(b.createdAt)+'? Data saat ini akan dibuatkan backup dahulu.'))return;
+   try{createBackup('Backup otomatis sebelum restore lokal');state=b.data;save();render();renderBackupHistory();notify('Backup lokal berhasil dipulihkan.')}
+   catch(e){notify('Restore tidak berhasil. Data tidak diubah.')}
+ };
+ function renderBackupHistory(){
+   const el=document.getElementById('backupHistory');if(!el)return;
+   const h=getHistory();
+   el.innerHTML=h.length?h.slice(0,6).map((x,i)=>`<div class="backup-history-item"><div><strong>${stamp(x.createdAt)}</strong><br><span>${x.reason||'Backup'}</span></div><button title="Pulihkan backup ini" onclick="restoreLocalBackup(${i})" style="border:0;border-radius:7px;background:#0b7c79;color:white;padding:5px 7px;cursor:pointer"><i class="fa-solid fa-rotate-left"></i></button></div>`).join(''):'<div class="backup-history-empty">Belum ada backup. Buat backup pertama sekarang.</div>';
+ }
+ window.addEventListener('DOMContentLoaded',()=>{weeklyCheck();renderBackupHistory()});
+ // Fallback in case module loads after DOMContentLoaded
+ if(document.readyState!=='loading'){weeklyCheck();renderBackupHistory()}
+})();
+</script>
+<script id="weekly-reminder-module">
+(function(){
+ const KEY='absensiGTK_weeklyReminder_v1', PERIOD=7*24*60*60*1000, SNOOZE=24*60*60*1000;
+ function read(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch{return {}}}
+ function write(v){localStorage.setItem(KEY,JSON.stringify(v))}
+ function show(){const el=document.getElementById('weeklyReminder');if(!el)return;const r=read(),now=Date.now();
+  const due=(!r.lastDone||now-r.lastDone>=PERIOD)&&(!r.snoozeUntil||now>=r.snoozeUntil);
+  el.style.display=due?'flex':'none';
+  if(due && 'Notification' in window && Notification.permission==='granted' && !r.notifiedFor){
+   try{new Notification('Pengingat Absensi GTK',{body:'Jangan lupa backup data dan cetak absensi manual mingguan.',icon:document.querySelector('.brand-logo img')?.src});r.notifiedFor=new Date().toDateString();write(r)}catch(e){}
+  }
+ }
+ window.weeklyReminderDone=function(){const r=read();r.lastDone=Date.now();r.snoozeUntil=0;r.notifiedFor='';write(r);show();if(typeof notify==='function')notify('Pengingat ditandai selesai. Akan muncul lagi minggu depan.');};
+ window.weeklyReminderSnooze=function(){const r=read();r.snoozeUntil=Date.now()+SNOOZE;r.notifiedFor='';write(r);show();if(typeof notify==='function')notify('Pengingat ditunda 1 hari.');};
+ window.addEventListener('DOMContentLoaded',show);if(document.readyState!=='loading')show();
+ // Keep reminder status refreshed while the app remains open.
+ setInterval(show,60*60*1000);
+})();
+</script>
+<style id="premium-admin-style">
+/* ===== Premium Administration (Emerald & Gold) — tambahan, tidak menimpa tata letak lama ===== */
+:root{--pa-em:#0b6b4f;--pa-em2:#10906a;--pa-gold:#c9a24a;--pa-ivory:#fbf8f0;--pa-ink:#17352c;--pa-mut:#6b7d76;--pa-line:#e4e0d2;--pa-ok:#12935f;--pa-warn:#d99a1c;--pa-bad:#c9444b}
+body{background:#f5f3ea!important}
+.sidebar{background:linear-gradient(170deg,#0d4d39,#073a2c 72%)!important;scrollbar-color:#2f7a60 transparent!important}
+.sidebar .side-label{color:#e6cf93!important}
+.btn-primary{background:linear-gradient(135deg,#2fc093,#0f9a6e)!important;color:#03301f!important;box-shadow:0 6px 16px rgba(15,154,110,.22)!important}
+.hero{background:linear-gradient(120deg,#0b6b4f,#084a38)!important}
+.eyebrow{background:#e8f4ee!important;color:#0b6b4f!important}
+.sp-menu-btn.active{box-shadow:inset 3px 0 0 var(--pa-gold)}
+.pa-hide{display:none!important}
+#paView{display:none}
+body.view-pa #paView{display:block}
+body.view-pa .main>:not(#paView){display:none!important}
+.pa-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.pa-head h2{margin:0;font-size:24px;color:var(--pa-ink);letter-spacing:-.3px}
+.pa-head p{margin:4px 0 0;color:var(--pa-mut);font-size:13px}
+.pa-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.pa-card{background:#fff;border:1px solid var(--pa-line);border-radius:16px;padding:18px;box-shadow:0 8px 24px rgba(20,60,45,.06);min-width:0}
+.pa-card h3{margin:0 0 10px;font-size:13px;color:var(--pa-mut);font-weight:700;display:flex;align-items:center;gap:8px}
+.pa-card h3 i{color:var(--pa-em)}
+.pa-big{font-size:26px;font-weight:800;color:var(--pa-ink);line-height:1.1}
+.pa-sub{font-size:12px;color:var(--pa-mut);margin-top:6px;line-height:1.5}
+.pa-bar{height:8px;border-radius:99px;background:#ece8d9;overflow:hidden;margin:10px 0 4px}
+.pa-bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--pa-em2),var(--pa-gold));border-radius:99px;transition:width .35s}
+.pa-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px}
+.pa-chip.green{background:#e0f4ea;color:#0b6e45}.pa-chip.yellow{background:#fcf0d2;color:#8a5d06}.pa-chip.red{background:#fbe1e3;color:#a02b33}
+.pa-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pa-b{border:0;border-radius:10px;padding:10px 14px;min-height:40px;font:700 12px inherit;font-family:inherit;cursor:pointer;background:var(--pa-em);color:#fff;display:inline-flex;align-items:center;gap:7px;transition:transform .15s,box-shadow .15s}
+.pa-b:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(11,107,79,.25)}
+.pa-b.alt{background:#fff;color:var(--pa-em);border:1px solid #bfd9cc}.pa-b.gold{background:var(--pa-gold);color:#3b2b05}.pa-b.sm{min-height:32px;padding:6px 10px}.pa-b.danger{background:#fff;color:var(--pa-bad);border:1px solid #efc6c9}
+.pa-b:focus-visible,.pa-cb:focus-visible,#paBell:focus-visible{outline:3px solid var(--pa-gold);outline-offset:2px}
+.pa-shield{display:flex;gap:16px;align-items:center;padding:20px;border-radius:18px;color:#fff;margin-bottom:14px}
+.pa-shield.green{background:linear-gradient(120deg,#0b6b4f,#12935f)}.pa-shield.yellow{background:linear-gradient(120deg,#9a6a0a,#d99a1c)}.pa-shield.red{background:linear-gradient(120deg,#8c2a31,#c9444b)}
+.pa-shield i.fa-shield-halved{font-size:42px;opacity:.95}
+.pa-shield h3{margin:0;font-size:20px}.pa-shield p{margin:4px 0 0;font-size:13px;opacity:.95}
+.pa-list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.pa-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--pa-line);border-radius:12px;background:var(--pa-ivory)}
+.pa-row.done{background:#eef8f2;border-color:#cde8d9}.pa-row.done .pa-t{text-decoration:line-through;color:var(--pa-mut)}
+.pa-cb{width:22px;height:22px;accent-color:var(--pa-em);flex:none;cursor:pointer}
+.pa-t{flex:1;min-width:0;font-size:13px;color:var(--pa-ink);font-weight:600}.pa-t small{display:block;font-weight:500;color:var(--pa-mut);font-size:11px;margin-top:2px}
+.pa-row .pa-actions{margin:0}
+.pa-in{flex:1;min-width:180px;border:1px solid var(--pa-line);border-radius:10px;padding:10px 12px;font:inherit;font-size:13px;background:#fff}
+.pa-det{border:1px solid var(--pa-line);border-radius:12px;padding:10px 14px;background:#fff;margin-top:8px;font-size:13px}.pa-det summary{cursor:pointer;font-weight:700;color:var(--pa-ink)}
+.pa-res{margin-top:12px;padding:12px;border-radius:12px;font-size:12px;line-height:1.6}.pa-res.ok{background:#e8f6ee;color:#0b5a38}.pa-res.bad{background:#fbe6e8;color:#8f2a31}
+.pa-log td,.pa-log th{padding:9px 10px;border-bottom:1px solid var(--pa-line);font-size:12px;text-align:left;vertical-align:top}.pa-log th{color:var(--pa-mut)}
+.pa-scroll{overflow-x:auto;max-width:100%}
+#paBell{position:fixed;right:20px;bottom:76px;z-index:9000;width:48px;height:48px;border-radius:50%;border:0;background:var(--pa-em);color:#fff;font-size:18px;cursor:pointer;box-shadow:0 10px 26px rgba(8,60,44,.35);border-bottom:3px solid var(--pa-gold)}
+#paBell .pa-badge{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:99px;background:var(--pa-bad);color:#fff;font:800 11px/20px inherit;font-family:inherit;text-align:center;padding:0 5px}
+#paPanel{position:fixed;right:20px;bottom:134px;z-index:9001;width:min(390px,calc(100vw - 24px));max-height:min(70vh,560px);display:none;flex-direction:column;background:#fff;border:1px solid var(--pa-line);border-radius:18px;box-shadow:0 22px 60px rgba(8,40,30,.28);overflow:hidden}
+#paPanel.open{display:flex}
+.pn-h{padding:14px 16px;background:var(--pa-ivory);border-bottom:1px solid var(--pa-line);display:flex;justify-content:space-between;align-items:center;gap:8px}.pn-h strong{color:var(--pa-ink);font-size:14px}
+.pn-l{overflow-y:auto;flex:1}
+.pn-i{padding:12px 16px;border-bottom:1px solid #f0ede2;display:flex;gap:10px;font-size:12px;color:var(--pa-ink)}
+.pn-i.unread{background:#f3faf6}.pn-i.unread strong:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--pa-bad);margin-right:6px}
+.pn-i p{margin:3px 0;color:var(--pa-mut);line-height:1.5}.pn-i time{font-size:10px;color:#98a59f}
+.pn-f{padding:10px 14px;border-top:1px solid var(--pa-line);display:flex;gap:8px;flex-wrap:wrap}
+.pn-ic{width:32px;height:32px;border-radius:10px;background:#e8f4ee;color:var(--pa-em);display:flex;align-items:center;justify-content:center;flex:none}
+.pn-ic.penting{background:#fcf0d2;color:#8a5d06}
+@media(max-width:760px){.pa-head h2{font-size:20px}.pa-shield{flex-direction:column;align-items:flex-start}.pa-row{flex-wrap:wrap}#paBell{right:14px;bottom:70px}#paPanel{right:12px;bottom:128px}}
+@media(prefers-reduced-motion:reduce){.pa-bar>i,.pa-b{transition:none}}
+@media print{#paView,#paBell,#paPanel{display:none!important}body{background:#fff!important}}
+</style>
+<script id="premium-admin-module">
+(function(){'use strict';
+const $=(s,r)=>(r||document).querySelector(s),$$=(s,r)=>[].slice.call((r||document).querySelectorAll(s));
+const K={n:'agtk_pa_notif_v1',c:'agtk_pa_check_v1',l:'agtk_pa_log_v1',m:'agtk_pa_meta_v1'},DATA='absensiGTK_MuaraBakti01',BK='absensiGTK_backupHistory_v1',RK='absensiGTK_weeklyReminder_v1',DAY=864e5;
+const rd=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}};
+const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+let N=rd(K.n,[]),C=rd(K.c,{}),L=rd(K.l,[]),M=rd(K.m,{});
+if(!Array.isArray(N))N=[];if(!Array.isArray(L))L=[];if(!C||typeof C!=='object')C={};if(!M||typeof M!=='object')M={};
+C.custom=C.custom||[];C.edits=C.edits||{};C.weeks=C.weeks||{};M.seen=M.seen||{};M.prefs=M.prefs||{};
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+const pad=n=>String(n).padStart(2,'0'),ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const wkStart=d=>{const x=new Date(d||Date.now());x.setHours(0,0,0,0);x.setDate(x.getDate()-((x.getDay()+6)%7));return x};
+const wk=()=>ymd(wkStart()),today=()=>ymd(new Date());
+const fdt=t=>new Date(t).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}),fd=t=>new Date(t).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+const wkLabel=k=>{const s=new Date(k+'T00:00:00'),e=new Date(s);e.setDate(e.getDate()+6);return fd(s)+' – '+fd(e)};
+const say=m=>{try{notify(m)}catch(e){}};
+
+/* ---------- Log aktivitas ---------- */
+function log(name,status,desc){L.unshift({ts:Date.now(),name:name,status:status,desc:desc||''});L=L.slice(0,150);wr(K.l,L)}
+const thr={};function lg(key,ms,n,s,d){const t=Date.now();if(thr[key]&&t-thr[key]<ms)return;thr[key]=t;log(n,s,d)}
+
+/* ---------- Notifikasi ---------- */
+function pruneSeen(){const k=Object.keys(M.seen);if(k.length>300){k.sort((a,b)=>M.seen[a]-M.seen[b]).slice(0,k.length-300).forEach(x=>delete M.seen[x])}}
+function bn(n){try{if(!M.prefs.browser||!('Notification' in window)||Notification.permission!=='granted')return;new Notification(n.title,{body:n.msg})}catch(e){}}
+function addN(o){const n=Object.assign({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),read:false},o);N.unshift(n);N=N.slice(0,100);wr(K.n,N);bellUI();if(o.important)bn(n);return n}
+function once(key,type,title,msg,o){if(M.seen[key])return null;M.seen[key]=Date.now();pruneSeen();wr(K.m,M);return addN(Object.assign({type:type,title:title,msg:msg},o||{}))}
+
+/* ---------- Checklist ---------- */
+const DEF=[['d1','Backup data aplikasi Absensi GTK'],['d2','Cetak absensi manual'],['d3','Periksa kelengkapan data GTK'],['d4','Periksa rekap kehadiran'],['d5','Periksa data izin, sakit, dan ketidakhadiran'],['d6','Simpan arsip administrasi mingguan'],['d7','Pastikan backup tersimpan di lokasi lain'],['d8','Periksa kembali keamanan data aplikasi']];
+const tasks=()=>DEF.map(x=>({id:x[0],text:C.edits[x[0]]||x[1],def:1})).concat(C.custom.map(c=>({id:c.id,text:c.text})));
+const W=()=>{const k=wk();return C.weeks[k]=C.weeks[k]||{done:{},snap:[]}};
+const prog=()=>{const t=tasks(),w=W(),n=t.filter(x=>w.done[x.id]).length;return{n:n,total:t.length,pct:t.length?Math.round(n/t.length*100):0}};
+function saveC(){const w=W();w.snap=tasks().map(x=>({id:x.id,text:x.text,done:w.done[x.id]||0}));const ks=Object.keys(C.weeks).sort();while(ks.length>26)delete C.weeks[ks.shift()];wr(K.c,C)}
+function markReminder(){try{const r=rd(RK,{});if(!r.lastDone||r.lastDone<wkStart().getTime()){r.lastDone=Date.now();r.snoozeUntil=0;wr(RK,r)}}catch(e){}const b=$('#weeklyReminder');if(b)b.style.display='none'}
+function setDone(id,on,why){const w=W();if(!!w.done[id]===on)return false;if(on)w.done[id]=Date.now();else delete w.done[id];saveC();const x=tasks().find(t=>t.id===id);log('Checklist',on?'Selesai':'Dibatalkan',(x?x.text:id)+(why?' ('+why+')':''));afterCheck();return true}
+function afterCheck(){const p=prog(),k=wk();
+ if(p.pct===100)once('ckdone-'+k,'checklist','Administrasi mingguan selesai','Semua checklist minggu ini sudah selesai. Terima kasih atas ketelitian Anda.');
+ else if(p.pct>=75)once('cknear-'+k,'checklist','Checklist mingguan hampir selesai',(p.total-p.n)+' tugas lagi untuk menyelesaikan administrasi minggu ini.',{act:'check'});
+ const w=W();if(w.done.d1&&w.done.d2)markReminder();render()}
+
+/* ---------- Informasi data ---------- */
+const hist=()=>rd(BK,[]);
+function bkInfo(){const h=hist(),last=h[0]&&h[0].createdAt?new Date(h[0].createdAt).getTime():0,dl=M.dlAt||0,age=dl?(Date.now()-dl)/DAY:null;let lvl,txt;
+ if(!dl&&!last){lvl='red';txt='Belum ada backup. Buat backup sekarang.'}
+ else if(!dl){lvl='yellow';txt='Baru ada salinan di browser. Unduh file backup agar data lebih aman.'}
+ else if(age<=7){lvl='green';txt='Backup file terbaru masih dalam periode aman.'}
+ else if(age<=14){lvl='yellow';txt='Backup sudah waktunya diperbarui ('+Math.floor(age)+' hari lalu).'}
+ else{lvl='red';txt='Backup terakhir sudah terlalu lama ('+Math.floor(age)+' hari lalu).'}
+ return{h:h,last:last,dl:dl,age:age,lvl:lvl,txt:txt}}
+const LV={green:['AMAN','fa-circle-check'],yellow:['PERLU PERHATIAN','fa-triangle-exclamation'],red:['BERBAHAYA','fa-circle-exclamation']};
+function absInfo(){const g=state.guru||[],d=state.hariAktif||[],a=state.attendance||{};let ok=0;g.forEach(x=>d.forEach(h=>{const e=a[x.id+'_'+h]||{},i=e.datang!=null?e.datang:x.datang,o=e.pulang!=null?e.pulang:x.pulang;if(i&&o)ok++}));const tot=g.length*d.length;return{tot:tot,ok:ok,pct:tot?Math.round(ok/tot*100):0}}
+function stInfo(){try{const r=localStorage.getItem(DATA);if(!r)return{ok:false,t:'Belum tersimpan di browser'};JSON.parse(r);return{ok:true,t:'Tersimpan otomatis · '+(r.length/1024).toFixed(1)+' KB'}}catch(e){return{ok:false,t:'Data tidak dapat dibaca'}}}
+const printed=()=>!!M.printAt&&M.printAt>=wkStart().getTime();
+
+/* ---------- Aksi ---------- */
+function go(v){const b=$('.sp-menu-btn[data-view="'+v+'"]');if(b)b.click()}
+function confirmPrint(){M.printAt=Date.now();wr(K.m,M);log('Cetak absensi','Dikonfirmasi','Dikonfirmasi pengguna secara manual');setDone('d2',true,'konfirmasi cetak');addN({type:'cetak',title:'Cetak absensi dikonfirmasi',msg:'Absensi minggu ini ditandai sudah dicetak pada '+fdt(M.printAt)+'.'});say('Tercatat: absensi sudah dicetak.');render()}
+function dlPayload(p){const b=new Blob([JSON.stringify(p,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a'),d=new Date(p.createdAt);a.href=u;a.download='Backup_AbsensiGTK_'+ymd(d)+'_'+pad(d.getHours())+pad(d.getMinutes())+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);return{name:a.download,size:b.size}}
+function dlLast(){const h=hist();if(!h.length||!h[0].backup){say('Belum ada backup lokal. Gunakan BACKUP SEKARANG.');return}try{const r=dlPayload(h[0].backup);recordDl(r,'Unduh salinan terakhir')}catch(e){log('Backup','Gagal','Unduhan gagal');say('Unduhan gagal.')}}
+function recordDl(r,why){M.dlAt=Date.now();M.dlName=r.name;M.dlSize=r.size;wr(K.m,M);log('Backup data','Berhasil',why+' · '+r.name);setDone('d1',true,'file backup diunduh');addN({type:'backup',title:'Backup berhasil dibuat',msg:'File '+r.name+' (~'+(r.size/1024).toFixed(1)+' KB) diunduh. Simpan juga salinannya di lokasi lain.'});once('offsite-'+wk(),'backup','Simpan backup di lokasi lain','Salin file backup ke flashdisk, email, atau penyimpanan awan agar aman bila perangkat ini bermasalah.',{act:'backup'});render()}
+function validate(ev){const f=ev.target.files&&ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{let h;try{const b=JSON.parse(r.result);if(b.format!=='absensiGTK-backup'||!b.data||!Array.isArray(b.data.guru)||!b.data.attendance||!b.data.periode||!Array.isArray(b.data.hariAktif))throw new Error('Struktur tidak sesuai format backup Absensi GTK');
+ h='<div class="pa-res ok"><b>File valid.</b><br>Dibuat: '+(b.createdAt?fdt(b.createdAt):'-')+'<br>Jumlah GTK: '+b.data.guru.length+' · Hari aktif: '+b.data.hariAktif.length+' · Entri jam: '+Object.keys(b.data.attendance).length+'<br>Periode: Minggu '+E(b.data.periode.minggu)+' '+E(b.data.periode.bulan)+' '+E(b.data.periode.tahun)+'<br>Ukuran: '+(f.size/1024).toFixed(1)+' KB. Data aplikasi tidak diubah oleh pemeriksaan ini.</div>';log('Validasi backup','Valid',f.name)}
+ catch(e){h='<div class="pa-res bad"><b>File tidak valid.</b> '+E(e.message)+'. Jangan gunakan file ini untuk restore.</div>';log('Validasi backup','Tidak valid',f.name)}
+ valHTML=h;render()};r.onerror=()=>{valHTML='<div class="pa-res bad">File tidak dapat dibaca.</div>';render()};r.readAsText(f);ev.target.value=''}
+let valHTML='',view='dashboard',showUnread=false;
+
+/* ---------- Tampilan ---------- */
+const VT={dashboard:['Dashboard Status Administrasi','Ringkasan kondisi data dan pekerjaan administrasi minggu ini.'],check:['Checklist Mingguan','Kontrol pekerjaan administrasi operator. Otomatis berganti setiap Senin.'],backup:['Backup Center','Pusat keamanan data Absensi GTK.'],log:['Riwayat Aktivitas','Catatan aktivitas penting yang tersimpan di perangkat ini.']};
+const card=(ic,t,b)=>'<div class="pa-card"><h3><i class="fa-solid '+ic+'"></i>'+t+'</h3>'+b+'</div>';
+const bar=p=>'<div class="pa-bar" role="progressbar" aria-valuenow="'+p+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+p+'%"></i></div>';
+function vDash(){const a=absInfo(),s=stInfo(),b=bkInfo(),p=prog(),g=state.guru||[],lg2=g.filter(x=>x.nama&&x.datang&&x.pulang).length,pr=state.periode||{},pc=printed();
+ const bw=b.dl&&b.dl>=wkStart().getTime();
+ return '<div class="pa-grid">'+
+ card('fa-table-list','Status Data Absensi','<div class="pa-big">'+a.pct+'%</div>'+bar(a.pct)+'<div class="pa-sub">Periode aktif: Minggu '+E(pr.minggu)+' · '+E(pr.bulan)+' '+E(pr.tahun)+'<br>'+a.ok+' dari '+a.tot+' kolom jam terisi<br><span class="pa-chip '+(s.ok?'green':'red')+'">'+E(s.t)+'</span></div>')+
+ card('fa-shield-halved','Status Backup','<span class="pa-chip '+b.lvl+'"><i class="fa-solid '+LV[b.lvl][1]+'"></i> '+LV[b.lvl][0]+'</span><div class="pa-sub">Backup file terakhir: '+(b.dl?fdt(b.dl):'belum pernah diunduh')+'<br>Salinan di browser: '+(b.last?fdt(b.last):'belum ada')+'<br>Minggu ini: '+(bw?'sudah dibackup':'belum dibackup')+'</div><div class="pa-actions"><button class="pa-b sm" data-act="bk"><i class="fa-solid fa-cloud-arrow-down"></i> Backup Sekarang</button></div>')+
+ card('fa-print','Status Cetak Absensi Manual','<span class="pa-chip '+(pc?'green':'yellow')+'">'+(pc?'Sudah dicetak':'Belum dicetak')+'</span><div class="pa-sub">'+(pc?'Dikonfirmasi: '+fdt(M.printAt):'Aplikasi tidak dapat mengetahui hasil cetak, jadi status ini berdasarkan konfirmasi Anda.')+(M.printAt&&!pc?'<br>Cetak terakhir: '+fdt(M.printAt):'')+'</div><div class="pa-actions"><button class="pa-b sm alt" data-act="print"><i class="fa-solid fa-print"></i> Cetak Absensi</button>'+(pc?'':'<button class="pa-b sm" data-act="cprint"><i class="fa-solid fa-check"></i> Saya sudah mencetak absensi</button>')+'</div>')+
+ card('fa-users','Status GTK','<div class="pa-big">'+g.length+'</div><div class="pa-sub">Total GTK terdaftar<br>Data lengkap (nama & jam): '+lg2+' dari '+g.length+'</div>'+bar(g.length?Math.round(lg2/g.length*100):0))+
+ card('fa-list-check','Administrasi Mingguan','<div class="pa-big">'+p.pct+'%</div>'+bar(p.pct)+'<div class="pa-sub">'+p.n+' selesai · '+(p.total-p.n)+' belum<br><b>'+(p.pct===100?'Administrasi minggu ini selesai':'Administrasi minggu berjalan belum selesai')+'</b></div><div class="pa-actions"><button class="pa-b sm alt" data-act="gocheck">Buka Checklist</button></div>')+'</div>'}
+function vCheck(){const w=W(),p=prog(),ts=tasks();
+ let h='<div class="pa-card"><h3><i class="fa-solid fa-calendar-week"></i> Minggu '+wkLabel(wk())+'</h3><div class="pa-big">'+p.pct+'%</div>'+bar(p.pct)+'<div class="pa-sub">'+p.n+' dari '+p.total+' tugas selesai</div></div><div class="pa-list">';
+ ts.forEach(t=>{const d=w.done[t.id];h+='<div class="pa-row'+(d?' done':'')+'"><input class="pa-cb" type="checkbox" data-id="'+t.id+'" '+(d?'checked':'')+' aria-label="'+E(t.text)+'"><div class="pa-t">'+E(t.text)+(d?'<small>Selesai '+fdt(d)+'</small>':'')+'</div><div class="pa-actions">'+
+  (t.id==='d1'&&!d?'<button class="pa-b sm" data-act="bk">Backup</button>':'')+(t.id==='d2'&&!d?'<button class="pa-b sm alt" data-act="print">Cetak</button><button class="pa-b sm" data-act="cprint">Tandai Sudah Dicetak</button>':'')+
+  '<button class="pa-b sm alt" data-act="edit" data-id="'+t.id+'" title="Ubah tugas" aria-label="Ubah tugas"><i class="fa-solid fa-pen"></i></button>'+(t.def?'':'<button class="pa-b sm danger" data-act="del" data-id="'+t.id+'" title="Hapus tugas" aria-label="Hapus tugas"><i class="fa-solid fa-trash"></i></button>')+'</div></div>'});
+ h+='</div><div class="pa-actions"><input id="paNew" class="pa-in" placeholder="Tambah tugas checklist sendiri…" maxlength="120"><button class="pa-b" data-act="add"><i class="fa-solid fa-plus"></i> Tambah</button></div>';
+ const ks=Object.keys(C.weeks).filter(k=>k!==wk()).sort().reverse();
+ h+='<div class="pa-card" style="margin-top:16px"><h3><i class="fa-solid fa-clock-rotate-left"></i> Riwayat minggu sebelumnya</h3>';
+ h+=ks.length?ks.map(k=>{const s=C.weeks[k].snap||[],n=s.filter(x=>x.done).length,pc=s.length?Math.round(n/s.length*100):0;return '<details class="pa-det"><summary>'+wkLabel(k)+' — '+pc+'% ('+n+'/'+s.length+')</summary>'+s.map(x=>'<div class="pa-sub">'+(x.done?'✔':'✖')+' '+E(x.text)+(x.done?' · '+fdt(x.done):'')+'</div>').join('')+'</details>'}).join(''):'<div class="pa-sub">Belum ada riwayat. Minggu ini akan tersimpan otomatis saat minggu berganti.</div>';
+ return h+'</div>'}
+function vBackup(){const b=bkInfo(),h=b.h;let sz=0;try{sz=h.reduce((a,x)=>a+JSON.stringify(x).length,0)}catch(e){}
+ const pc=b.dl?Math.max(0,Math.min(100,Math.round(100-b.age/14*100))):0;
+ return '<div class="pa-shield '+b.lvl+'"><i class="fa-solid fa-shield-halved"></i><div><h3>'+LV[b.lvl][0]+'</h3><p>'+E(b.txt)+'</p></div></div>'+
+ '<div class="pa-grid">'+card('fa-circle-info','Informasi backup','<div class="pa-sub">Backup file terakhir: <b>'+(b.dl?fdt(b.dl):'belum pernah')+'</b>'+(M.dlName?'<br>'+E(M.dlName)+' · ~'+((M.dlSize||0)/1024).toFixed(1)+' KB':'')+'<br>Salinan di browser terakhir: <b>'+(b.last?fdt(b.last):'belum ada')+'</b><br>Jumlah salinan diketahui aplikasi: <b>'+h.length+'</b> (~'+(sz/1024).toFixed(0)+' KB)<br>Status mingguan: <b>'+(b.dl&&b.dl>=wkStart().getTime()?'sudah dibackup minggu ini':'belum dibackup minggu ini')+'</b></div>'+bar(pc))+
+ card('fa-bolt','Tindakan','<div class="pa-actions"><button class="pa-b" data-act="bk"><i class="fa-solid fa-cloud-arrow-down"></i> BACKUP SEKARANG</button><button class="pa-b alt" data-act="dlast"><i class="fa-solid fa-download"></i> DOWNLOAD BACKUP</button><button class="pa-b alt" data-act="rst"><i class="fa-solid fa-rotate-left"></i> RESTORE DATA</button><button class="pa-b alt" data-act="val"><i class="fa-solid fa-file-circle-check"></i> VALIDASI FILE BACKUP</button><button class="pa-b alt" data-act="hist"><i class="fa-solid fa-list"></i> LIHAT RIWAYAT BACKUP</button></div><input type="file" id="paVal" accept=".json,application/json" hidden>'+valHTML)+'</div>'+
+ '<div class="pa-card" id="paHist" style="margin-top:14px"><h3><i class="fa-solid fa-clock-rotate-left"></i> Riwayat backup (salinan di browser)</h3>'+(h.length?'<div class="pa-list">'+h.map((x,i)=>'<div class="pa-row"><div class="pa-t">'+fdt(x.createdAt)+'<small>'+E(x.reason||'Backup')+' · '+(x.backup&&x.backup.data?(x.backup.data.guru||[]).length+' GTK':'')+'</small></div><button class="pa-b sm alt" data-act="rl" data-i="'+i+'">Pulihkan</button></div>').join('')+'</div>':'<div class="pa-sub">Belum ada backup.</div>')+'</div>'+
+ '<details class="pa-det" id="paGuide"><summary><i class="fa-solid fa-book"></i> Panduan penyimpanan data</summary><div class="pa-sub">1. Klik BACKUP SEKARANG setiap minggu; file .json akan terunduh.<br>2. Salin file ke flashdisk, email, atau penyimpanan awan (lokasi lain selain perangkat ini).<br>3. Data aplikasi tersimpan di browser perangkat ini. Menghapus data browser dapat menghapusnya, sehingga file backup adalah pengaman utama.<br>4. Untuk memulihkan, pilih RESTORE DATA lalu file backup. Aplikasi meminta konfirmasi dan menyimpan data saat ini lebih dulu.<br>5. Gunakan VALIDASI FILE BACKUP untuk memeriksa file tanpa mengubah data.</div></details>'}
+function vLog(){return '<div class="pa-card pa-scroll pa-log">'+(L.length?'<table style="width:100%;border-collapse:collapse"><thead><tr><th>Tanggal</th><th>Jam</th><th>Aktivitas</th><th>Status</th><th>Keterangan</th></tr></thead><tbody>'+L.map(x=>'<tr><td>'+fd(x.ts)+'</td><td>'+new Date(x.ts).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})+'</td><td>'+E(x.name)+'</td><td>'+E(x.status)+'</td><td>'+E(x.desc)+'</td></tr>').join('')+'</tbody></table>':'<div class="pa-sub">Belum ada aktivitas tercatat.</div>')+'</div>'}
+function render(){const v=$('#paView');if(!v)return;if(document.body.classList.contains('view-pa')){const f={dashboard:vDash,check:vCheck,backup:vBackup,log:vLog}[view];const ae=document.activeElement,keep=ae&&ae.id==='paNew'?ae.value:null;
+ v.innerHTML='<div class="pa-head"><div><h2>'+VT[view][0]+'</h2><p>'+VT[view][1]+'</p></div></div>'+f();
+ if(keep!=null){const i=$('#paNew');if(i){i.value=keep;i.focus()}}}
+ bellUI();if($('#paPanel').classList.contains('open'))panelUI()}
+function openView(v){view=v;document.body.classList.remove('view-sptjm');document.body.classList.add('view-pa');$$('.sp-menu-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('data-pa')===v));render();window.scrollTo(0,0)}
+function leave(){document.body.classList.remove('view-pa');$$('.pa-btn').forEach(b=>b.classList.remove('active'))}
+
+/* ---------- Pusat notifikasi ---------- */
+const TI={backup:'fa-shield-halved',cetak:'fa-print',checklist:'fa-list-check',sistem:'fa-gear'};
+function bellUI(){const u=N.filter(n=>!n.read).length,b=$('#paBell .pa-badge');if(!b)return;b.style.display=u?'block':'none';b.textContent=u>99?'99+':u;$('#paBell').setAttribute('aria-label','Notifikasi, '+u+' belum dibaca')}
+function panelUI(){const l=showUnread?N.filter(n=>!n.read):N;$('#paPanel .pn-l').innerHTML=l.length?l.map(n=>'<div class="pn-i'+(n.read?'':' unread')+'"><div class="pn-ic'+(n.important?' penting':'')+'"><i class="fa-solid '+(TI[n.type]||'fa-bell')+'"></i></div><div style="flex:1;min-width:0"><strong>'+E(n.title)+'</strong><p>'+E(n.msg)+'</p><time>'+fdt(n.ts)+'</time><div class="pa-actions" style="margin-top:6px">'+(n.act?'<button class="pa-b sm" data-n="act" data-id="'+n.id+'">Buka</button>':'')+(n.read?'':'<button class="pa-b sm alt" data-n="read" data-id="'+n.id+'">Tandai dibaca</button>')+'<button class="pa-b sm danger" data-n="del" data-id="'+n.id+'" aria-label="Hapus notifikasi"><i class="fa-solid fa-trash"></i></button></div></div></div>').join(''):'<div class="pa-sub" style="padding:22px;text-align:center">Tidak ada notifikasi.</div>';
+ const bf=$('#paBrowser');if(bf)bf.textContent=M.prefs.browser?'Notifikasi browser: aktif':'Aktifkan notifikasi browser'}
+function togglePanel(f){const p=$('#paPanel'),o=f==null?!p.classList.contains('open'):f;p.classList.toggle('open',o);if(o)panelUI()}
+function enableBrowser(){if(M.prefs.browser){M.prefs.browser=false;wr(K.m,M);panelUI();return}
+ if(!('Notification' in window)){say('Browser ini tidak mendukung notifikasi. Notifikasi dalam aplikasi tetap berfungsi.');return}
+ try{const done=p=>{if(p==='granted'){M.prefs.browser=true;wr(K.m,M);say('Notifikasi browser aktif (hanya saat aplikasi terbuka).')}else say('Izin ditolak. Notifikasi dalam aplikasi tetap berfungsi.');panelUI()};const r=Notification.requestPermission(done);if(r&&r.then)r.then(done)}catch(e){say('Notifikasi browser tidak dapat diaktifkan.')}}
+function nAct(n){togglePanel(false);const a=n.act;if(a==='backup')openView('backup');else if(a==='check')openView('check');else if(a==='print'){openView('dashboard')}else openView('dashboard')}
+
+/* ---------- Evaluasi pengingat (terkontrol, tanpa pengulangan) ---------- */
+function evaluate(){try{const b=bkInfo(),k=wk(),t=today(),dow=new Date().getDay(),late=dow>=5||dow===0,p=prog();
+ if(b.lvl!=='green')once('bk-'+t,'backup',!b.dl&&!b.last?'Backup belum dilakukan':b.lvl==='red'?'Backup terakhir sudah terlalu lama':'Waktunya backup data mingguan',b.txt,{important:true,act:'backup'});
+ if(!printed()){once('pr-'+k,'cetak','Waktunya mencetak absensi manual','Cetak absensi minggu ini, lalu konfirmasi dengan tombol “Saya sudah mencetak absensi”.',{important:true,act:'print'});
+  if(late)once('prl-'+k,'cetak','Cetak absensi mingguan belum dikonfirmasi','Akhir pekan hampir tiba dan cetak absensi belum dikonfirmasi.',{act:'print'})}
+ if(late&&p.pct<100)once('ck-'+k,'checklist','Terdapat checklist yang belum diselesaikan',(p.total-p.n)+' tugas administrasi minggu ini belum selesai.',{act:'check'})}catch(e){console.warn('evaluate',e)}}
+function tick(){evaluate();render()}
+
+/* ---------- Hook ke fungsi lama (dibungkus, tidak diganti) ---------- */
+const snap=()=>{try{return JSON.stringify([state.guru,state.attendance])}catch(e){return''}};
+function wrap(n,fn){const o=window[n];if(typeof o!=='function')return;window[n]=function(){const b=snap(),r=o.apply(this,arguments);try{fn(b,r)}catch(e){console.warn(n,e)}return r}}
+function hook(){
+ const ob=window.backupNow;if(typeof ob==='function')window.backupNow=function(d){const before=(hist()[0]||{}).createdAt;let err=null;try{ob.apply(this,arguments)}catch(e){err=e}
+  const h=hist(),after=(h[0]||{}).createdAt;
+  if(!err&&after&&after!==before){if(d){let sz=0;try{sz=new Blob([JSON.stringify(h[0].backup,null,2)]).size}catch(e){}const dt=new Date(after);recordDl({name:'Backup_AbsensiGTK_'+ymd(dt)+'_'+pad(dt.getHours())+pad(dt.getMinutes())+'.json',size:sz},'Backup & unduh')}else{log('Backup data','Berhasil','Salinan lokal dibuat');addN({type:'backup',title:'Backup lokal dibuat',msg:'Salinan tersimpan di browser. Unduh file backup untuk keamanan penuh.',act:'backup'});render()}}
+  else{log('Backup data','Gagal','Backup tidak berhasil dibuat');addN({type:'backup',title:'Backup gagal',msg:'Backup tidak berhasil dibuat. Periksa ruang penyimpanan lalu coba lagi.',important:true,act:'backup'});render()}};
+ const rs=n=>{const o=window[n];if(typeof o!=='function')return;window[n]=function(){const before=(hist()[0]||{}).createdAt;o.apply(this,arguments);const a=hist()[0]||{};if(a.createdAt&&a.createdAt!==before&&/restore/i.test(a.reason||'')){log('Restore data','Berhasil','Data dipulihkan; data sebelumnya diamankan');addN({type:'sistem',title:'Data berhasil dipulihkan',msg:'Data sebelumnya sudah diamankan sebagai backup otomatis.',important:true});render()}}};
+ rs('restoreBackupFile');rs('restoreLocalBackup');
+ wrap('setTime',()=>lg('t',6e5,'Data absensi','Diperbarui','Jam absensi diubah'));
+ wrap('fillDefaultTimes',(b)=>{if(snap()!==b)log('Data absensi','Berhasil','Jam diisi otomatis')});
+ wrap('clearTimes',(b)=>{if(snap()!==b)log('Data absensi','Berhasil','Jam dikosongkan')});
+ wrap('addStaff',(b)=>{if(snap()!==b)log('Data GTK','Berhasil','GTK ditambahkan')});
+ wrap('removeStaff',(b)=>{if(snap()!==b)log('Data GTK','Berhasil','GTK dihapus')});
+ wrap('resetData',(b)=>{if(snap()!==b)log('Data GTK','Berhasil','Data pegawai direset')});
+ const owd=window.weeklyReminderDone;if(typeof owd==='function')window.weeklyReminderDone=function(){owd.apply(this,arguments);log('Pengingat mingguan','Selesai','Ditandai selesai oleh pengguna')};
+ ['bulan','tahun','minggu','kepsekNama','kepsekNip'].forEach(id=>{const e=document.getElementById(id);if(e)e.addEventListener('change',()=>lg('set',6e4,'Pengaturan','Berubah','Pengaturan periode/pengesahan diubah'))});
+ const wa=$('.weekly-reminder-actions');if(wa&&!$('#paRemPrint')){const b=document.createElement('button');b.id='paRemPrint';b.className='weekly-reminder-secondary';b.type='button';b.innerHTML='<i class="fa-solid fa-print"></i> Cetak Absensi';b.onclick=()=>window.print();wa.insertBefore(b,wa.children[1]||null);const c=document.createElement('button');c.className='weekly-reminder-secondary';c.type='button';c.innerHTML='<i class="fa-solid fa-check-double"></i> Sudah dicetak';c.onclick=confirmPrint;wa.insertBefore(c,wa.children[2]||null)}}
+
+/* ---------- Inisialisasi ---------- */
+function init(){const main=$('.main');if(!main||$('#paView'))return;
+ const sec=document.createElement('section');sec.id='paView';sec.setAttribute('aria-live','polite');main.appendChild(sec);
+ let menu=$('.sp-menu');if(!menu){const sb=$('.sidebar .brand');if(sb){sb.insertAdjacentHTML('afterend','<div class="sp-menu-wrap"><div class="side-label">Menu</div><div class="side-card sp-menu"></div></div>');menu=$('.sp-menu')}}
+ if(menu){const mk=(k,ic,t)=>'<button type="button" class="sp-menu-btn pa-btn" data-pa="'+k+'"><i class="fa-solid '+ic+'"></i><span>'+t+'</span></button>';
+  menu.insertAdjacentHTML('afterbegin',mk('dashboard','fa-gauge-high','Dashboard Administrasi'));
+  menu.insertAdjacentHTML('beforeend',mk('check','fa-list-check','Checklist Mingguan')+mk('backup','fa-shield-halved','Backup Center')+mk('log','fa-clock-rotate-left','Riwayat Aktivitas'));
+  $$('.sp-menu-btn').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('pa-btn'))openView(b.getAttribute('data-pa'));else leave()}))}
+ document.body.insertAdjacentHTML('beforeend','<button id="paBell" type="button" aria-label="Notifikasi" title="Notifikasi"><i class="fa-solid fa-bell"></i><span class="pa-badge" style="display:none"></span></button><div id="paPanel" role="dialog" aria-label="Pusat Notifikasi"><div class="pn-h"><strong><i class="fa-solid fa-bell"></i> Pusat Notifikasi</strong><div class="pa-actions" style="margin:0"><button class="pa-b sm alt" data-n="filter" id="paFilter">Belum dibaca</button><button class="pa-b sm alt" data-n="close" aria-label="Tutup"><i class="fa-solid fa-xmark"></i></button></div></div><div class="pn-l"></div><div class="pn-f"><button class="pa-b sm" data-n="all">Tandai semua dibaca</button><button class="pa-b sm alt" data-n="clr">Hapus yang sudah dibaca</button><button class="pa-b sm alt" id="paBrowser" data-n="brw">Aktifkan notifikasi browser</button></div></div>');
+ $('#paBell').addEventListener('click',()=>togglePanel());
+ $('#paPanel').addEventListener('click',e=>{const b=e.target.closest('[data-n]');if(!b)return;const a=b.getAttribute('data-n'),id=b.getAttribute('data-id'),n=N.find(x=>x.id===id);
+  if(a==='close')togglePanel(false);else if(a==='read'&&n){n.read=true}else if(a==='del'){N=N.filter(x=>x.id!==id)}else if(a==='all'){N.forEach(x=>x.read=true)}else if(a==='clr'){N=N.filter(x=>!x.read)}else if(a==='filter'){showUnread=!showUnread;b.textContent=showUnread?'Semua':'Belum dibaca'}else if(a==='brw'){enableBrowser();return}else if(a==='act'&&n){n.read=true;wr(K.n,N);nAct(n);return}
+  wr(K.n,N);bellUI();panelUI()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')togglePanel(false)});
+ sec.addEventListener('change',e=>{const t=e.target;if(t.classList.contains('pa-cb'))setDone(t.getAttribute('data-id'),t.checked);else if(t.id==='paVal')validate(e)});
+ sec.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='paNew'){e.preventDefault();act('add')}});
+ sec.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)act(b.getAttribute('data-act'),b)});
+ hook();
+ tick();
+ setInterval(tick,36e5);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()})}
+function act(a,b){const id=b&&b.getAttribute('data-id');
+ if(a==='bk')window.backupNow(true);else if(a==='dlast')dlLast();else if(a==='rst'){const f=document.getElementById('restoreFile');if(f)f.click()}
+ else if(a==='val'){const f=$('#paVal');if(f)f.click()}else if(a==='hist'){const h=$('#paHist');if(h)h.scrollIntoView({behavior:'smooth'})}
+ else if(a==='print'){go('absensi');setTimeout(()=>window.print(),250)}else if(a==='cprint')confirmPrint();else if(a==='gocheck')openView('check');
+ else if(a==='add'){const i=$('#paNew'),v=i&&i.value.trim();if(!v){say('Tulis nama tugas terlebih dahulu.');return}C.custom.push({id:'c'+Date.now().toString(36),text:v.slice(0,120)});saveC();log('Checklist','Ditambah',v);render()}
+ else if(a==='edit'){const t=tasks().find(x=>x.id===id);if(!t)return;const v=prompt('Ubah tugas:',t.text);if(v==null||!v.trim())return;if(t.def)C.edits[id]=v.trim().slice(0,120);else{const c=C.custom.find(x=>x.id===id);if(c)c.text=v.trim().slice(0,120)}saveC();log('Checklist','Diubah',v.trim());render()}
+ else if(a==='del'){if(!confirm('Hapus tugas tambahan ini? Riwayat minggu lalu tetap tersimpan.'))return;C.custom=C.custom.filter(x=>x.id!==id);delete W().done[id];saveC();log('Checklist','Dihapus','Tugas tambahan dihapus');afterCheck()}
+ else if(a==='rl'){window.restoreLocalBackup(+b.getAttribute('data-i'));render()}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
 </script>
 </body>
 </html>
