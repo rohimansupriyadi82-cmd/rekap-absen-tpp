@@ -546,6 +546,30 @@ tbody td{color:#183452!important;background-clip:padding-box}
 @media(max-width:600px){.weekly-reminder{padding:15px;gap:12px;border-radius:15px}.weekly-reminder-icon{width:46px;height:46px;flex-basis:46px;border-radius:13px;font-size:19px}.weekly-reminder-content h3{font-size:14px}.weekly-reminder-content p{font-size:10px}.weekly-reminder-actions button{min-width:130px}}
 @media print{.weekly-reminder{display:none!important}}
 </style>
+
+<style id="dashboard-enhancements-v1">
+.pa-period{display:flex;gap:9px;flex-wrap:wrap;margin:0 0 14px}
+.pa-period span{display:inline-flex;align-items:center;gap:7px;padding:8px 11px;border-radius:999px;background:#fff;border:1px solid #e5e0cf;color:#47635b;font-size:11px;font-weight:700;box-shadow:0 3px 10px rgba(20,60,45,.035)}
+.pa-period i{color:#0b8a68}
+.pa-dash-extra{display:grid;grid-template-columns:minmax(260px,1fr) minmax(260px,1fr);gap:14px;margin-top:14px}
+.pa-health-list,.pa-recent-list{display:flex;flex-direction:column;gap:9px}
+.pa-health-row{display:flex;align-items:center;gap:10px;padding:10px 11px;border:1px solid #eee8d9;border-radius:12px;background:#fcfbf7;min-width:0}
+.pa-health-icon,.pa-recent-icon{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:10px;background:#e5f4ec;color:#0b855e}
+.pa-health-icon.yellow{background:#fff2d6;color:#a36d09}.pa-health-icon.red{background:#fde7e8;color:#b73940}
+.pa-health-row>div{flex:1;min-width:0}.pa-health-row b,.pa-recent-item b{font-size:11px;color:#23483b;display:block}
+.pa-health-row small,.pa-recent-item small{display:block;font-size:10px;line-height:1.45;color:#718078;margin-top:2px}
+.pa-health-row .pa-chip{font-size:9px;padding:4px 7px;white-space:nowrap}
+.pa-recent-item{display:flex;gap:10px;align-items:flex-start;padding:10px 11px;border:1px solid #eee8d9;border-radius:12px;background:#fcfbf7}
+.pa-recent-icon{background:#e9f3f5;color:#387589}
+.pa-recent-item>div{min-width:0;flex:1}
+.pa-recent-item time{display:block;font-size:9px;color:#9a9c90;margin-top:3px}
+.pa-empty{display:flex;align-items:center;justify-content:center;gap:8px;padding:22px;color:#8c988f;font-size:12px}
+.pa-empty i{font-size:18px}
+.pa-dash-extra .pa-card{transition:transform .2s,box-shadow .2s}
+.pa-dash-extra .pa-card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(20,60,45,.09)}
+@media(max-width:760px){.pa-dash-extra{grid-template-columns:1fr}.pa-period span{font-size:10px;padding:7px 9px}.pa-health-row{align-items:flex-start}.pa-health-row .pa-chip{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.pa-dash-extra .pa-card{transition:none}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1849,13 +1873,28 @@ const VT={dashboard:['Dashboard Status Administrasi','Ringkasan kondisi data dan
 const card=(ic,t,b)=>'<div class="pa-card"><h3><i class="fa-solid '+ic+'"></i>'+t+'</h3>'+b+'</div>';
 const bar=p=>'<div class="pa-bar" role="progressbar" aria-valuenow="'+p+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+p+'%"></i></div>';
 function vDash(){const a=absInfo(),s=stInfo(),b=bkInfo(),p=prog(),g=state.guru||[],lg2=g.filter(x=>x.nama&&x.datang&&x.pulang).length,pr=state.periode||{},pc=printed();
- const bw=b.dl&&b.dl>=wkStart().getTime();
- return '<div class="pa-grid">'+
+ const bw=b.dl&&b.dl>=wkStart().getTime(),health=healthInfo(),recent=L.slice(0,5);
+ return '<div class="pa-period"><span><i class="fa-solid fa-calendar-week"></i> Minggu '+E(pr.minggu||wkLabel(wk()))+'</span><span><i class="fa-solid fa-calendar"></i> '+E(pr.bulan||new Date().toLocaleString("id-ID",{month:"long"}))+' '+E(pr.tahun||new Date().getFullYear())+'</span><span><i class="fa-solid fa-clock"></i> Periode administrasi aktif</span></div>'+
+ '<div class="pa-grid">'+
  card('fa-table-list','Status Data Absensi','<div class="pa-big">'+a.pct+'%</div>'+bar(a.pct)+'<div class="pa-sub">Periode aktif: Minggu '+E(pr.minggu)+' · '+E(pr.bulan)+' '+E(pr.tahun)+'<br>'+a.ok+' dari '+a.tot+' kolom jam terisi<br><span class="pa-chip '+(s.ok?'green':'red')+'">'+E(s.t)+'</span></div>')+
  card('fa-shield-halved','Status Backup','<span class="pa-chip '+b.lvl+'"><i class="fa-solid '+LV[b.lvl][1]+'"></i> '+LV[b.lvl][0]+'</span><div class="pa-sub">Backup file terakhir: '+(b.dl?fdt(b.dl):'belum pernah diunduh')+'<br>Salinan di browser: '+(b.last?fdt(b.last):'belum ada')+'<br>Minggu ini: '+(bw?'sudah dibackup':'belum dibackup')+'</div><div class="pa-actions"><button class="pa-b sm" data-act="bk"><i class="fa-solid fa-cloud-arrow-down"></i> Backup Sekarang</button></div>')+
  card('fa-print','Status Cetak Absensi Manual','<span class="pa-chip '+(pc?'green':'yellow')+'">'+(pc?'Sudah dicetak':'Belum dicetak')+'</span><div class="pa-sub">'+(pc?'Dikonfirmasi: '+fdt(M.printAt):'Aplikasi tidak dapat mengetahui hasil cetak, jadi status ini berdasarkan konfirmasi Anda.')+(M.printAt&&!pc?'<br>Cetak terakhir: '+fdt(M.printAt):'')+'</div><div class="pa-actions"><button class="pa-b sm alt" data-act="print"><i class="fa-solid fa-print"></i> Cetak Absensi</button>'+(pc?'':'<button class="pa-b sm" data-act="cprint"><i class="fa-solid fa-check"></i> Saya sudah mencetak absensi</button>')+'</div>')+
  card('fa-users','Status GTK','<div class="pa-big">'+g.length+'</div><div class="pa-sub">Total GTK terdaftar<br>Data lengkap (nama & jam): '+lg2+' dari '+g.length+'</div>'+bar(g.length?Math.round(lg2/g.length*100):0))+
- card('fa-list-check','Administrasi Mingguan','<div class="pa-big">'+p.pct+'%</div>'+bar(p.pct)+'<div class="pa-sub">'+p.n+' selesai · '+(p.total-p.n)+' belum<br><b>'+(p.pct===100?'Administrasi minggu ini selesai':'Administrasi minggu berjalan belum selesai')+'</b></div><div class="pa-actions"><button class="pa-b sm alt" data-act="gocheck">Buka Checklist</button></div>')+'</div>'}
+ card('fa-list-check','Administrasi Mingguan','<div class="pa-big">'+p.pct+'%</div>'+bar(p.pct)+'<div class="pa-sub">'+p.n+' selesai · '+(p.total-p.n)+' belum<br><b>'+(p.pct===100?'Administrasi minggu ini selesai':'Administrasi minggu berjalan belum selesai')+'</b></div><div class="pa-actions"><button class="pa-b sm alt" data-act="gocheck">Buka Checklist</button></div>')+'</div>'+
+ '<div class="pa-dash-extra">'+
+ card('fa-heart-pulse','Kesehatan Sistem','<div class="pa-health-list">'+health.map(x=>'<div class="pa-health-row"><span class="pa-health-icon '+x.cls+'"><i class="fa-solid '+x.ic+'"></i></span><div><b>'+E(x.name)+'</b><small>'+E(x.text)+'</small></div><span class="pa-chip '+x.cls+'">'+E(x.status)+'</span></div>').join('')+'</div>')+
+ card('fa-clock-rotate-left','Aktivitas Terbaru','<div class="pa-recent-list">'+(recent.length?recent.map(x=>'<div class="pa-recent-item"><span class="pa-recent-icon"><i class="fa-solid '+recentIcon(x.name)+'"></i></span><div><b>'+E(x.name)+' · '+E(x.status)+'</b><small>'+E(x.desc||'')+'</small><time>'+fdt(x.ts)+'</time></div></div>').join(''):'<div class="pa-empty"><i class="fa-solid fa-inbox"></i><span>Belum ada aktivitas tercatat.</span></div>')+'</div><div class="pa-actions"><button class="pa-b sm alt" data-act="logview"><i class="fa-solid fa-list"></i> Lihat Semua Aktivitas</button></div>')+
+ '</div>'}
+function healthInfo(){const a=absInfo(),s=stInfo(),b=bkInfo(),p=prog(),g=state.guru||[],complete=g.filter(x=>x.nama&&x.datang&&x.pulang).length;
+ const storage=s.ok,backup=b.lvl==='green',admin=p.pct===100,gtk=g.length>0&&complete===g.length;
+ return [
+ {name:'Penyimpanan Data',text:s.t,status:storage?'Tersimpan':'Perlu perhatian',cls:storage?'green':'red',ic:storage?'fa-circle-check':'fa-triangle-exclamation'},
+ {name:'Status Backup',text:b.txt,status:backup?'Aman':b.lvl==='red'?'Perlu tindakan':'Perhatian',cls:b.lvl,ic:backup?'fa-shield-check':'fa-shield-halved'},
+ {name:'Status Aplikasi',text:storage?'Data aplikasi dapat dibaca.':'Data aplikasi belum terverifikasi.',status:storage?'Normal':'Periksa',cls:storage?'green':'red',ic:storage?'fa-heart-pulse':'fa-circle-exclamation'},
+ {name:'Administrasi',text:p.n+' dari '+p.total+' tugas checklist selesai · Absensi '+a.pct+'% terisi.',status:admin?'Lengkap':'Belum selesai',cls:admin?'green':'yellow',ic:admin?'fa-circle-check':'fa-list-check'},
+ {name:'Data GTK',text:complete+' dari '+g.length+' GTK memiliki nama dan jam terisi.',status:gtk?'Lengkap':g.length?'Periksa':'Belum ada data',cls:gtk?'green':'yellow',ic:gtk?'fa-users':'fa-user-check'}
+ ]}
+function recentIcon(name){name=String(name||'').toLowerCase();if(name.includes('backup'))return'fa-shield-halved';if(name.includes('cetak'))return'fa-print';if(name.includes('checklist'))return'fa-list-check';if(name.includes('gtk'))return'fa-users';if(name.includes('restore'))return'fa-rotate-left';return'fa-pen-to-square'}
 function vCheck(){const w=W(),p=prog(),ts=tasks();
  let h='<div class="pa-card"><h3><i class="fa-solid fa-calendar-week"></i> Minggu '+wkLabel(wk())+'</h3><div class="pa-big">'+p.pct+'%</div>'+bar(p.pct)+'<div class="pa-sub">'+p.n+' dari '+p.total+' tugas selesai</div></div><div class="pa-list">';
  ts.forEach(t=>{const d=w.done[t.id];h+='<div class="pa-row'+(d?' done':'')+'"><input class="pa-cb" type="checkbox" data-id="'+t.id+'" '+(d?'checked':'')+' aria-label="'+E(t.text)+'"><div class="pa-t">'+E(t.text)+(d?'<small>Selesai '+fdt(d)+'</small>':'')+'</div><div class="pa-actions">'+
@@ -1897,7 +1936,10 @@ function evaluate(){try{const b=bkInfo(),k=wk(),t=today(),dow=new Date().getDay(
  if(b.lvl!=='green')once('bk-'+t,'backup',!b.dl&&!b.last?'Backup belum dilakukan':b.lvl==='red'?'Backup terakhir sudah terlalu lama':'Waktunya backup data mingguan',b.txt,{important:true,act:'backup'});
  if(!printed()){once('pr-'+k,'cetak','Waktunya mencetak absensi manual','Cetak absensi minggu ini, lalu konfirmasi dengan tombol “Saya sudah mencetak absensi”.',{important:true,act:'print'});
   if(late)once('prl-'+k,'cetak','Cetak absensi mingguan belum dikonfirmasi','Akhir pekan hampir tiba dan cetak absensi belum dikonfirmasi.',{act:'print'})}
- if(late&&p.pct<100)once('ck-'+k,'checklist','Terdapat checklist yang belum diselesaikan',(p.total-p.n)+' tugas administrasi minggu ini belum selesai.',{act:'check'})}catch(e){console.warn('evaluate',e)}}
+ if(late&&p.pct<100)once('ck-'+k,'checklist','Terdapat checklist yang belum diselesaikan',(p.total-p.n)+' tugas administrasi minggu ini belum selesai.',{act:'check'});
+ const ai=absInfo(),gg=state.guru||[],gc=gg.filter(x=>x.nama&&x.datang&&x.pulang).length;
+ if(ai.tot&&ai.pct<100)once('abs-'+t,'sistem','Data absensi belum lengkap',ai.ok+' dari '+ai.tot+' kolom jam terisi. Periksa kembali absensi hari aktif.',{act:'print'});
+ if(gg.length&&gc<gg.length)once('gtk-'+t,'sistem','Data GTK perlu diperiksa',gc+' dari '+gg.length+' GTK memiliki nama dan jam yang lengkap.',{act:'check'})}catch(e){console.warn('evaluate',e)}}
 function tick(){evaluate();render()}
 
 /* ---------- Hook ke fungsi lama (dibungkus, tidak diganti) ---------- */
@@ -1942,7 +1984,7 @@ function init(){const main=$('.main');if(!main||$('#paView'))return;
  setInterval(tick,36e5);document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()})}
 function act(a,b){const id=b&&b.getAttribute('data-id');
  if(a==='bk')window.backupNow(true);else if(a==='dlast')dlLast();else if(a==='rst'){const f=document.getElementById('restoreFile');if(f)f.click()}
- else if(a==='val'){const f=$('#paVal');if(f)f.click()}else if(a==='hist'){const h=$('#paHist');if(h)h.scrollIntoView({behavior:'smooth'})}
+ else if(a==='val'){const f=$('#paVal');if(f)f.click()}else if(a==='hist'){const h=$('#paHist');if(h)h.scrollIntoView({behavior:'smooth'})}else if(a==='logview')openView('log')
  else if(a==='print'){go('absensi');setTimeout(()=>window.print(),250)}else if(a==='cprint')confirmPrint();else if(a==='gocheck')openView('check');
  else if(a==='add'){const i=$('#paNew'),v=i&&i.value.trim();if(!v){say('Tulis nama tugas terlebih dahulu.');return}C.custom.push({id:'c'+Date.now().toString(36),text:v.slice(0,120)});saveC();log('Checklist','Ditambah',v);render()}
  else if(a==='edit'){const t=tasks().find(x=>x.id===id);if(!t)return;const v=prompt('Ubah tugas:',t.text);if(v==null||!v.trim())return;if(t.def)C.edits[id]=v.trim().slice(0,120);else{const c=C.custom.find(x=>x.id===id);if(c)c.text=v.trim().slice(0,120)}saveC();log('Checklist','Diubah',v.trim());render()}
