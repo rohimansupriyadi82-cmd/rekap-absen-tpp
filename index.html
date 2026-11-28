@@ -2070,6 +2070,10 @@ function detect(ch,H,V,ph){var anch=[],tms=[];
  ch.forEach(function(c){if(/dinilai|penilai/i.test(c.t))return;var m=RXT.exec(c.t),pre;if(m){if(/:/.test(m[1]))return;var rest=m[2];if(!(/\d{4}/.test(rest)||(RXM.test(rest)&&/\d/.test(rest))||/[.\u2026_]{3,}/.test(rest)))return;pre=m[1].replace(/\s+$/,'')+' '}else{m=RXB.exec(c.t);if(!m||/:/.test(m[1]))return;pre=m[1].replace(/\s+$/,'')+', '}
   var ref=null;if(anch.some(function(a){var y=a.lab?a.lab.y:a.box.t+6,ok=c.y<y-1&&y-c.y<(a.lab?125:150)&&c.x1>a.box.l-130&&c.x0<a.box.r+130;if(ok)ref=a;return ok})){
    var cc=(c.x0+c.x1)/2,ac=(ref.box.l+ref.box.r)/2;c.pre=pre;c.align=Math.abs(cc-ac)<10?'c':'l';tms.push(c)}});
+ /* Anti dobel: buang kotak palsu di ATAS baris titimangsa, lalu pertahankan satu kotak per penanda tangan per halaman (yang terbawah = blok tanda tangan sebenarnya) */
+ (function(){var real=tms.filter(function(t){return !t.syn});
+  if(real.length)anch=anch.filter(function(a){return !real.some(function(t){return t.y>a.box.b-2&&t.y-a.box.b<160&&t.x1>a.box.l-130&&t.x0<a.box.r+130})});
+  ['guru','kepsek'].forEach(function(k){var l=anch.filter(function(a){return a.k===k});if(l.length>1){var keep=l.reduce(function(b,a){return a.box.t>b.box.t?a:b});anch=anch.filter(function(a){return a.k!==k||a===keep})}})})();
  if(!tms.length&&anch.length){var r=anch.reduce(function(b,a){return a.box.l>b.box.l?a:b}),lab=r.lab;tms.push({syn:1,x0:r.box.l+4,x1:r.box.l+4,y:(lab?lab.y-lab.h*2.4:r.box.t-12),h:lab?lab.h:11,serif:lab?lab.serif:true,align:'l',t:'',pre:''})}
  return{anch:anch,tms:tms}}
 
@@ -2151,7 +2155,7 @@ async function exportPdf(){if(!S.bytes){say('Impor file PDF terlebih dahulu.',1)
     if(!g.syn)pp.drawRectangle({x:vb[0]+g.x,y:vb[3]-(g.base+g.sz*.3),width:g.w,height:g.sz*1.28,color:L.rgb(1,1,1),borderWidth:0});
     pp.drawText(g.txt,{x:vb[0]+g.tx,y:vb[3]-g.base,size:g.sz,font:fn,color:L.rgb(0,0,0)})});
    P.forEach(function(p){if(p.page!==pi||!em[p.kind])return;pp.drawImage(em[p.kind],{x:vb[0]+p.x,y:vb[3]-p.y-p.h,width:p.w,height:p.h,opacity:p.kind==='stempel'?.85:1})})});
-  var out=await doc.save(),a=document.createElement('a'),url=URL.createObjectURL(new Blob([out],{type:'application/pdf'}));a.href=url;a.download=S.name+'_TTD.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},2000);say('PDF berhasil dibuat: '+a.download)
+  var out=await doc.save();if(RAW)return out;var a=document.createElement('a'),url=URL.createObjectURL(new Blob([out],{type:'application/pdf'}));a.href=url;a.download=S.name+'_TTD.pdf';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},2000);say('PDF berhasil dibuat: '+a.download)
  }catch(e){console.error(e);say('Gagal membuat PDF: '+(e&&e.message||e),1)}}
 
 /* ---------- Tampilan ---------- */
@@ -2166,6 +2170,7 @@ function build(){var v=document.createElement('section');v.id='pdfView';v.innerH
  '<div class="pa-actions" id="pdfAct" style="display:none;margin:0"><button type="button" class="pa-b gold" id="pdfDl"><i class="fa-solid fa-file-arrow-down"></i> Unduh PDF Hasil</button><button type="button" class="pa-b alt" id="pdfReset"><i class="fa-solid fa-arrows-rotate"></i> Posisi otomatis ulang</button></div>'+
  '</div><div class="pdf-view"><div id="pdfPages"></div><div class="pdf-empty" id="pdfEmpty"><div><i class="fa-regular fa-file-pdf"></i><div>Pratinjau PDF akan tampil di sini</div></div></div></div></div>';return v}
 function refreshInfo(){var i=$('#pdfTmInfo');if(!i)return;var t=null;S.pages.some(function(p){return p.tms.some(function(x){t=x;return true})});i.textContent=!S.bytes?'Tanggal terisi hari ini. Tempat pada titimangsa dibiarkan seperti di PDF; hanya tanggalnya yang diganti.':!t?'Titimangsa tidak ditemukan pada PDF.':t.syn?'Titimangsa belum ada di PDF; ditambahkan di atas kolom tanda tangan: '+tmNew(t):'Di PDF: “'+t.t+'” → “'+tmNew(t)+'”'}
+var RAW=false;window.PDFSIG={S:S,getP:function(){return P},setP:function(v){P=v},openPdf:openPdf,paint:paint,placeKind:placeKind,resizeKind:resizeKind,needJs:needJs,needLib:needLib,raw:async function(){RAW=true;try{return await exportPdf()}finally{RAW=false}}};
 function init(){var main=$('.main'),menu=$('.sp-menu');if(!main||!menu||$('#pdfView'))return;load();var sec=build();main.appendChild(sec);
  mine=document.createElement('button');mine.type='button';mine.className='sp-menu-btn';mine.setAttribute('data-pdf','1');mine.innerHTML='<i class="fa-solid fa-file-pdf"></i><span>Impor PDF &amp; TTD</span>';var sp=$('.sp-menu-btn[data-view="sptjm"]',menu);if(sp&&sp.nextSibling)menu.insertBefore(mine,sp.nextSibling);else menu.appendChild(mine);
  mine.addEventListener('click',function(){document.body.classList.remove('view-sptjm','view-pa');document.body.classList.add('view-pdfsig');$$('.sp-menu-btn').forEach(function(b){b.classList.toggle('active',b===mine)});window.scrollTo(0,0);paint()});
@@ -2188,6 +2193,123 @@ function init(){var main=$('.main'),menu=$('.sp-menu');if(!main||!menu||$('#pdfV
  $('#pdfPages').addEventListener('pointerdown',drag);
  new MutationObserver(function(){var e=$('#pdfEmpty');if(e)e.style.display=$('#pdfPages').children.length?'none':'grid';refreshInfo()}).observe($('#pdfPages'),{childList:true});
  var rt;window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(function(){if(document.body.classList.contains('view-pdfsig'))paint()},120)});refreshInfo()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<style id="pdfsig-tabs-style">
+/* ===== Tab Sikawan Harian / Bulanan / Penggabungan + Panduan — tambahan, tidak mengubah fitur lain ===== */
+.pt-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}
+.pt-tab{border:1px solid #bfd9cc;background:#fff;color:var(--pa-em);border-radius:12px;padding:10px 14px;font:700 12.5px inherit;font-family:inherit;cursor:pointer;display:inline-flex;gap:7px;align-items:center;transition:.15s}
+.pt-tab:hover{transform:translateY(-1px)}.pt-tab.on{background:var(--pa-em);color:#fff;border-color:var(--pa-em)}
+#pdfMerge{display:none}#pdfView[data-t=gabung] #pdfMerge{display:block}
+#pdfView[data-t=gabung] #pdfPages,#pdfView[data-t=gabung] #pdfEmpty,#pdfView[data-t=gabung] #pdfAct,#pdfView[data-t=gabung] .pdf-side>.pa-card:first-child{display:none!important}
+#pdfMerge .pa-card{margin-bottom:12px}
+.pt-slot{border:1px solid var(--pa-line);border-radius:12px;background:#fff;padding:12px;margin-bottom:10px;font-size:12px;line-height:1.55}
+.pt-slot h4{margin:0 0 5px;font-size:13px}.pt-slot .pt-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pt-ok{color:#0b6b3a;font-weight:700;margin-top:5px}.pt-warn{color:#8a5d06;background:#fcf0d2;border-radius:8px;padding:6px 8px;margin-top:6px}.pt-bad{color:#8f2a31;font-weight:700}
+.pt-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.pt-opts .pa-in{width:100%}
+@media(max-width:700px){.pt-opts{grid-template-columns:1fr}}
+#guideView{display:none}
+body.view-guide #guideView{display:block}
+body.view-guide .main>:not(#guideView){display:none!important}
+body.view-guide .sidebar>:not(.brand):not(.sp-menu-wrap):not(.side-footer){display:none!important}
+#guideView .pa-card{margin-bottom:14px}#guideView h3{font-size:15px;margin:0 0 8px}
+#guideView ol,#guideView ul{margin:6px 0 0;padding-left:20px;font-size:13px;line-height:1.75}
+#guideView p{font-size:13px;line-height:1.7;margin:6px 0}
+.gd-note{background:#fcf0d2;color:#6b4a05;border-radius:10px;padding:9px 12px;font-size:12.5px;margin-top:8px;line-height:1.6}
+@media print{#guideView{display:none!important}}
+</style>
+<script id="pdfsig-tabs-module">
+(function(){'use strict';
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var E=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';'})};
+var LB={satu:'Satu File',harian:'Sikawan Harian',bulanan:'Sikawan Bulanan'},PR={satu:'Klik atau seret file PDF ke sini',harian:'Klik atau seret file Sikawan Harian (PDF)',bulanan:'Klik atau seret file Sikawan Bulanan (PDF)'};
+var SL={satu:{},harian:{},bulanan:{}},cur='satu',A=null;
+
+/* ---------- Slot: setiap tab punya PDF, posisi TTD & pratinjau sendiri ---------- */
+function save(k){var s=SL[k];s.bytes=A.S.bytes;s.name=A.S.name;s.pages=A.S.pages;s.P=A.getP();s.lbl=$('#pdfFile').textContent;s.act=$('#pdfAct').style.display;s.sig=Object.assign({},A.S.imgs);s.sz=Object.assign({},A.S.sz)}
+function activate(k){save(cur);var h=$('#pdfPages'),s=SL[cur];s.nodes=[].slice.call(h.children);h.innerHTML='';
+ cur=k;s=SL[k];A.S.bytes=s.bytes||null;A.S.name=s.name||'';A.S.pages=s.pages||[];A.setP(s.P||[]);A.S.mark=null;h.classList.remove('marking');var hn=$('#pdfHint');if(hn)hn.classList.remove('on');
+ (s.nodes||[]).forEach(function(n){h.appendChild(n)});
+ $('#pdfFile').textContent=s.bytes?s.lbl:PR[k];$('#pdfAct').style.display=s.bytes?(s.act||'flex'):'none';
+ var t=$('#pdfView .pdf-side .pa-card h3');if(t)t.innerHTML='<i class="fa-solid fa-file-pdf"></i> 1. Impor file PDF'+(k==='satu'?'':' — '+LB[k]);
+ /* sinkronkan TTD/stempel/ukuran yang diubah saat tab lain aktif */
+ if(s.bytes){var im=A.S.imgs,sg=s.sig||{};['stempel','kepsek','guru'].forEach(function(x){if((sg[x]||'')!==(im[x]||''))A.placeKind(x)});
+  if(s.sz&&(s.sz.sig!==A.S.sz.sig||s.sz.stp!==A.S.sz.stp))['guru','kepsek','stempel'].forEach(A.resizeKind)}
+ A.paint()}
+
+/* ---------- Tab ---------- */
+function setTab(t){$('#pdfView').setAttribute('data-t',t);$$('.pt-tab').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-t')===t)});
+ if(t==='gabung'){renderMerge()}else activate(t)}
+
+/* ---------- Penggabungan ---------- */
+function mmsg(m,bad){var e=$('#pdfMgMsg');e.textContent=m||'';e.className='pdf-msg'+(bad?' bad':'')}
+function info(k){var s=SL[k];if(!s.bytes)return '<span class="pt-bad">Belum diunggah</span>';
+ var g=0,kp=0,tm=0,sy=0,pk={guru:0,kepsek:0,stempel:0},w=[],im=A.S.imgs;
+ (s.pages||[]).forEach(function(p){p.anch.forEach(function(a){a.k==='guru'?g++:kp++});p.tms.forEach(function(t){t.syn?sy++:tm++})});(s.P||[]).forEach(function(p){pk[p.kind]++});
+ if(!g)w.push('kolom Guru tidak terdeteksi');if(!kp)w.push('kolom Kepala Sekolah tidak terdeteksi');if(!g||!kp)w.push('buka tab '+LB[k]+' lalu klik “Tandai kotak”');
+ if(!im.guru)w.push('TTD Guru belum diunggah');if(!im.kepsek)w.push('TTD Kepala Sekolah belum diunggah');if(!im.stempel)w.push('stempel belum diunggah');
+ return '<b>'+E(s.name)+'</b> · '+(s.pages||[]).length+' halaman<br>Kolom terdeteksi: Guru '+g+', Kepala Sekolah '+kp+'<br>Terpasang: TTD guru '+pk.guru+', TTD kepsek '+pk.kepsek+', stempel '+pk.stempel+'<br>Titimangsa: '+(tm?tm+' tanggal diganti':sy?'ditambahkan di atas kolom TTD':'tidak ditemukan')+
+  (w.length?'<div class="pt-warn">⚠ '+E(w.join('; '))+'</div>':'<div class="pt-ok">✓ Siap digabung</div>')}
+function renderMerge(){var keep=cur;['harian','bulanan'].forEach(function(k){if(SL[k].bytes)activate(k)});activate(keep);save(cur);
+ $('#pdfMgStat').innerHTML=['harian','bulanan'].map(function(k){return '<div class="pt-slot"><h4><i class="fa-solid fa-'+(k==='harian'?'calendar-day':'calendar-days')+'"></i> '+LB[k]+'</h4>'+info(k)+'<div class="pt-btns"><button type="button" class="pa-b sm" data-mgup="'+k+'"><i class="fa-solid fa-upload"></i> '+(SL[k].bytes?'Ganti file':'Unggah file')+'</button>'+(SL[k].bytes?'<button type="button" class="pa-b sm alt" data-mggo="'+k+'"><i class="fa-solid fa-vector-square"></i> Atur posisi TTD</button>':'')+'</div><input type="file" accept="application/pdf,.pdf" data-mgin="'+k+'" style="display:none"></div>'}).join('')+'<div class="pt-slot"><h4><i class="fa-solid fa-id-card"></i> Nama file otomatis</h4>'+(autoName()?'<b>'+E(autoName())+'.pdf</b><br>Diambil dari Nama &amp; NIP di bawah kolom tanda tangan Guru.':'<span class="pt-bad">Nama &amp; NIP belum terbaca</span> — akan memakai nama bawaan atau isi manual di bawah.')+'</div>';$('#pdfMgName').placeholder=autoName()||'Sikawan_Harian_Bulanan_Gabungan'}
+/* Nama & NIP otomatis: dibaca dari teks tepat di bawah kotak tanda tangan Guru */
+function who(k){var s=SL[k],res={nama:'',nip:''};if(!s||!s.pages)return res;
+ for(var i=s.pages.length-1;i>=0&&!(res.nama&&res.nip);i--){var pg=s.pages[i];
+  pg.anch.filter(function(a){return a.k==='guru'}).forEach(function(a){var b=a.box,c=(pg.ch||[]).filter(function(d){return d.y>b.b-3&&d.y-b.b<95&&d.x1>b.l-20&&d.x0<b.r+20}).sort(function(m,n){return m.y-n.y}),nipC=null,nm=null;
+   c.forEach(function(d){var m=/NIP\s*\.?\s*:?\s*(\d[\d\s]{9,})/i.exec(d.t);if(m&&!nipC){nipC=d;res.nip=res.nip||m[1].replace(/\s+/g,'')}});
+   c.forEach(function(d){if(d===nipC||/NIP|yang dinilai|penilai|pangkat|jabatan|golongan/i.test(d.t)||/^\d+$/.test(d.t))return;if(!nm&&(!nipC||d.y<nipC.y))nm=d});
+   if(nm&&!res.nama)res.nama=nm.t.replace(/\s+/g,' ').trim()})}
+ return res}
+function autoName(){var r=[who('harian'),who('bulanan')].filter(function(x){return x.nama||x.nip}),b=r.filter(function(x){return x.nama&&x.nip})[0]||r[0];if(!b)return '';return [b.nama,b.nip].filter(Boolean).join('_')}
+async function kindOf(f){var n=f.name.toLowerCase();if(/bulan/.test(n))return 'bulanan';if(/harian/.test(n))return 'harian';
+ try{await A.needJs();var d=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise,pg=await d.getPage(1),tc=await pg.getTextContent(),t=tc.items.map(function(i){return i.str}).join(' '),b=(t.match(/bulanan/gi)||[]).length,h=(t.match(/harian/gi)||[]).length;if(b>h)return 'bulanan';if(h>b)return 'harian'}catch(e){}return null}
+async function loadInto(k,f){var prev=cur;activate(k);try{await A.openPdf(f)}finally{activate(prev)}}
+async function loadFiles(files,force){files=[].slice.call(files||[]).filter(function(f){return /\.pdf$/i.test(f.name)||f.type==='application/pdf'});if(!files.length){mmsg('Pilih file berformat PDF.',1);return}
+ try{mmsg('Membaca & mengenali file…');var used={},plan=[];
+  if(force){plan.push([force,files[0]])}else{for(var i=0;i<files.length&&plan.length<2;i++){var k=await kindOf(files[i]);if(!k||used[k])k=used.harian?(used.bulanan?null:'bulanan'):'harian';if(!k)break;used[k]=1;plan.push([k,files[i]])}}
+  for(var j=0;j<plan.length;j++)await loadInto(plan[j][0],plan[j][1]);
+  renderMerge();mmsg('Dimuat: '+plan.map(function(p){return LB[p[0]]+' ← '+p[1].name}).join(' · ')+(files.length>2&&!force?' (hanya 2 file pertama dipakai)':'')+'. Periksa pemeriksaan di bawah, lalu klik Gabungkan.')
+ }catch(e){console.error(e);mmsg('Gagal memuat file: '+(e&&e.message||e),1)}}
+async function merge(){save(cur);var H=SL.harian,B=SL.bulanan;if(!H.bytes||!B.bytes){mmsg('Unggah file Sikawan Harian dan Sikawan Bulanan terlebih dahulu.',1);return}
+ var keep=cur;try{mmsg('Memproses & menggabungkan…');await A.needLib();var ap=$('#pdfMgApply').checked,ord=$('#pdfMgOrd').value==='bh'?['bulanan','harian']:['harian','bulanan'],parts=[];
+  for(var i=0;i<ord.length;i++){var k=ord[i];if(ap){activate(k);var o=await A.raw();if(!o)throw new Error('Gagal memproses '+LB[k]);parts.push(o)}else parts.push(SL[k].bytes)}
+  activate(keep);var L=PDFLib,out=await L.PDFDocument.create();
+  for(var j=0;j<parts.length;j++){var d=await L.PDFDocument.load(parts[j],{ignoreEncryption:true}),pp=await out.copyPages(d,d.getPageIndices());pp.forEach(function(p){out.addPage(p)})}
+  var by=await out.save(),nm=(($('#pdfMgName').value||'').trim()||autoName()||'Sikawan_Harian_Bulanan_Gabungan').replace(/\.pdf$/i,'').replace(/[\\\/:*?"<>|]+/g,'_').replace(/\s+/g,' ').trim()+'.pdf',a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([by],{type:'application/pdf'}));a.download=nm;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},2000);
+  mmsg('Berhasil: '+nm+' ('+out.getPageCount()+' halaman, urutan '+ord.map(function(x){return LB[x]}).join(' → ')+')'+(ap?' — TTD, stempel & titimangsa sudah terpasang.':'.'));renderMerge()
+ }catch(e){console.error(e);try{activate(keep)}catch(x){}mmsg('Gagal menggabungkan: '+(e&&e.message||e),1)}}
+
+/* ---------- Panduan ---------- */
+var GUIDE='<div class="pa-head"><div><h2>Panduan Penggunaan Aplikasi</h2><p>Langkah demi langkah memakai semua menu pada aplikasi Absensi GTK • Kec. Babelan.</p></div></div>'+
+'<div class="pa-card"><h3><i class="fa-solid fa-compass"></i> 1. Mengenal menu</h3><ul><li><b>Absensi Manual GTK</b> — membuat &amp; mencetak lembar absensi bulanan/mingguan.</li><li><b>Cetak SPTJM</b> — membuat surat SPTJM dan mengunduhnya sebagai Word (F4).</li><li><b>Impor PDF &amp; TTD</b> — memasang tanda tangan, stempel, dan titimangsa pada PDF (4 tab: Satu File, Sikawan Harian, Sikawan Bulanan, Penggabungan).</li><li><b>Dashboard Administrasi, Checklist Mingguan, Backup Center, Riwayat Aktivitas</b> — ringkasan, pengingat, pencadangan data, dan catatan aktivitas.</li><li><b>Panduan Penggunaan</b> — halaman ini.</li></ul></div>'+
+'<div class="pa-card"><h3><i class="fa-solid fa-table-list"></i> 2. Absensi Manual GTK</h3><ol><li>Pada panel kiri, pilih <b>Bulan</b>, <b>Tahun</b>, <b>Minggu ke</b>, dan centang <b>Hari aktif</b>.</li><li>Isi <b>Pengesahan kepala sekolah</b> (nama &amp; gelar, NIP).</li><li>Tambah pegawai lewat <b>Tambah pegawai</b> (nama, jam datang, jam pulang), atau <b>Impor Excel</b> (unduh <b>Template</b> dahulu agar format sesuai).</li><li>Klik <b>Isi Jam Otomatis</b> untuk mengisi jam, atau <b>Kosongkan Jam</b> untuk menghapusnya. Gunakan kolom cari untuk menemukan pegawai.</li><li>Cetak lewat <b>Cetak / Simpan PDF F4</b>, atau <b>Ekspor Excel</b>. Gunakan <b>Reset Data</b> hanya bila ingin memulai dari awal.</li></ol></div>'+
+'<div class="pa-card"><h3><i class="fa-solid fa-file-signature"></i> 3. Cetak SPTJM</h3><ol><li>Lengkapi <b>Data Master Sekolah</b> (logo atau gambar kop) dan <b>Data Kepala Sekolah</b>.</li><li>Isi <b>Isian SPTJM</b>, termasuk <b>Titimangsa</b> (tombol <b>Hari ini</b> mengisi tanggal otomatis).</li><li>Periksa <b>Pratinjau</b>, lalu klik <b>Unduh Word (.docx) F4</b>.</li></ol></div>'+
+'<div class="pa-card"><h3><i class="fa-solid fa-file-pdf"></i> 4. Impor PDF &amp; TTD</h3><p><b>Langkah awal (sekali saja, tersimpan di browser dan dipakai semua tab):</b></p><ol><li>Pada kartu <b>2. Tanda tangan &amp; stempel</b>, klik <b>Unggah</b> untuk TTD Guru, TTD Kepala Sekolah, dan Stempel (PNG/JPG). Latar putih dihapus otomatis.</li><li>Atur ukuran dengan slider bila perlu (awal: TTD ±4 cm, stempel ±3,5 cm).</li><li>Pada kartu <b>3. Titimangsa</b>, centang ganti tanggal otomatis, pilih tanggal (atau <b>Gunakan hari ini</b>). Isi <b>Tempat</b> hanya jika PDF belum memiliki titimangsa.</li></ol>'+
+'<p><b>Tab Satu File</b> — untuk satu PDF apa pun: impor PDF → TTD, stempel, dan tanggal terpasang otomatis → klik <b>Unduh PDF Hasil</b>.</p><p><b>Tab Upload Sikawan Harian</b> dan <b>Upload Sikawan Bulanan</b> — cara kerjanya sama, tetapi masing-masing menyimpan file dan posisi TTD sendiri. Pindah tab tidak menghapus pekerjaan di tab lain. Unduh hasil per file dengan <b>Unduh PDF Hasil</b>.</p>'+
+'<p><b>Tab Penggabungan</b> — menggabungkan Harian + Bulanan menjadi satu PDF:</p><ol><li>Klik area unggah dan pilih kedua file sekaligus; aplikasi mengenali Harian/Bulanan dari nama file atau isi dokumen. Bisa juga mengunggah satu per satu (atau file sudah dimuat dari tab Harian/Bulanan).</li><li>Baca <b>pemeriksaan otomatis</b> tiap file: jumlah kolom terdeteksi, TTD/stempel terpasang, titimangsa. Tanda ⚠ menjelaskan apa yang kurang.</li><li>Pilih urutan (Harian dulu / Bulanan dulu), biarkan <b>Pasang TTD, stempel &amp; titimangsa otomatis</b> tercentang, isi nama file, lalu klik <b>Gabungkan &amp; Unduh PDF</b>.</li></ol>'+
+'<div class="gd-note"><b>Bila kolom tanda tangan tidak terdeteksi:</b> buka tab terkait, klik <b>Tandai kotak</b> pada Guru/Kepala Sekolah, lalu seret kotak di area tanda tangan pada pratinjau. Gambar akan masuk ke kotak itu. Posisi bisa digeser dan ukurannya ditarik lewat titik hijau; tombol × menghapus dari halaman. <b>Posisi otomatis ulang</b> mengembalikan penempatan awal.</div></div>'+
+'<div class="pa-card"><h3><i class="fa-solid fa-shield-halved"></i> 5. Backup &amp; keamanan data</h3><ul><li>Klik <b>Backup &amp; Unduh Sekarang</b> secara rutin (minimal seminggu sekali); pulihkan lewat <b>Restore dari File Backup</b> atau riwayat backup.</li><li>Data tersimpan di browser perangkat ini. Jangan menghapus data situs/cache tanpa backup. File PDF yang diunggah tidak disimpan permanen, tetapi gambar TTD &amp; stempel disimpan.</li></ul></div>'+
+'<div class="pa-card"><h3><i class="fa-solid fa-circle-question"></i> 6. Masalah umum</h3><ul><li><b>“Pustaka PDF gagal dimuat”</b> — menu PDF memerlukan internet saat pertama dipakai. Periksa koneksi lalu coba lagi.</li><li><b>TTD tampak kotak putih</b> — pastikan <b>Hapus latar putih otomatis</b> tercentang, lalu unggah ulang gambar.</li><li><b>Tanggal tidak berubah</b> — pastikan kotak <b>Ganti tanggal titimangsa</b> tercentang dan tanggal terisi.</li><li><b>Hasil tidak pas</b> — periksa pratinjau sebelum mengunduh, lalu geser/ubah ukuran atau gunakan <b>Tandai kotak</b>.</li></ul></div>';
+
+function init(){if(!window.PDFSIG||!$('#pdfView')||$('#pdfMerge'))return;A=window.PDFSIG;
+ $('#pdfView .pa-head').insertAdjacentHTML('afterend','<div class="pt-tabs" role="tablist"><button type="button" class="pt-tab on" data-t="satu"><i class="fa-solid fa-file-pdf"></i> Satu File</button><button type="button" class="pt-tab" data-t="harian"><i class="fa-solid fa-calendar-day"></i> Upload Sikawan Harian</button><button type="button" class="pt-tab" data-t="bulanan"><i class="fa-solid fa-calendar-days"></i> Upload Sikawan Bulanan</button><button type="button" class="pt-tab" data-t="gabung"><i class="fa-solid fa-object-group"></i> Penggabungan Harian + Bulanan</button></div>');
+ $('#pdfView .pdf-view').insertAdjacentHTML('beforeend','<div id="pdfMerge"><div class="pa-card"><h3><i class="fa-solid fa-object-group"></i> Penggabungan Sikawan Harian + Bulanan</h3><div class="pa-sub" style="margin-bottom:10px">Unggah kedua file sekaligus (dikenali otomatis) atau satu per satu. TTD, stempel &amp; titimangsa dari panel kiri dipasang otomatis ke kedua file, lalu digabung menjadi satu PDF.</div><div class="pdf-drop" id="pdfMgDrop" tabindex="0" role="button"><i class="fa-solid fa-cloud-arrow-up"></i><b>Klik atau seret file Sikawan Harian &amp; Bulanan (bisa 2 file sekaligus)</b><span>Format PDF</span></div><input type="file" id="pdfMgIn" accept="application/pdf,.pdf" multiple style="display:none"></div><div class="pa-card"><h3><i class="fa-solid fa-list-check"></i> Pemeriksaan otomatis</h3><div id="pdfMgStat"></div><div class="pt-opts"><div><div class="pdf-lb">Urutan gabungan</div><select class="pa-in" id="pdfMgOrd"><option value="hb">Harian lalu Bulanan</option><option value="bh">Bulanan lalu Harian</option></select></div><div><div class="pdf-lb">Nama file hasil <small>(kosong = otomatis Nama_NIP)</small></div><input class="pa-in" id="pdfMgName" placeholder="Sikawan_Harian_Bulanan_Gabungan"></div></div><label class="pdf-chk"><input type="checkbox" id="pdfMgApply" checked> Pasang TTD, stempel &amp; titimangsa otomatis pada kedua file</label><div class="pa-actions"><button type="button" class="pa-b gold" id="pdfMgGo"><i class="fa-solid fa-file-circle-plus"></i> Gabungkan &amp; Unduh PDF</button></div><div id="pdfMgMsg" class="pdf-msg"></div></div></div>');
+ $('#pdfView').setAttribute('data-t','satu');
+ $('#pdfView').addEventListener('click',function(e){var t=e.target.closest('.pt-tab'),u=e.target.closest('[data-mgup]'),g=e.target.closest('[data-mggo]');
+  if(t)setTab(t.getAttribute('data-t'));else if(u)$('[data-mgin="'+u.getAttribute('data-mgup')+'"]').click();else if(g)setTab(g.getAttribute('data-mggo'));
+  else if(e.target.closest('#pdfMgDrop'))$('#pdfMgIn').click();else if(e.target.closest('#pdfMgGo'))merge()});
+ $('#pdfView').addEventListener('change',function(e){var t=e.target;if(t.id==='pdfMgIn'){loadFiles(t.files);t.value=''}else if(t.dataset&&t.dataset.mgin){var f=t.files;loadFiles(f,t.dataset.mgin);t.value=''}});
+ var dr=$('#pdfMgDrop');['dragover','dragenter'].forEach(function(n){dr.addEventListener(n,function(e){e.preventDefault();dr.classList.add('over')})});dr.addEventListener('dragleave',function(){dr.classList.remove('over')});dr.addEventListener('drop',function(e){e.preventDefault();dr.classList.remove('over');loadFiles(e.dataTransfer.files)});
+ dr.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#pdfMgIn').click()}});
+ /* menu Panduan */
+ var menu=$('.sp-menu'),main=$('.main');if(!menu||!main||$('#guideView'))return;
+ var gv=document.createElement('section');gv.id='guideView';gv.innerHTML=GUIDE;main.appendChild(gv);
+ var gb=document.createElement('button');gb.type='button';gb.className='sp-menu-btn';gb.setAttribute('data-guide','1');gb.innerHTML='<i class="fa-solid fa-book-open"></i><span>Panduan Penggunaan</span>';menu.appendChild(gb);
+ gb.addEventListener('click',function(){document.body.classList.remove('view-sptjm','view-pa','view-pdfsig');document.body.classList.add('view-guide');$$('.sp-menu-btn').forEach(function(b){b.classList.toggle('active',b===gb)});window.scrollTo(0,0)});
+ menu.addEventListener('click',function(e){var b=e.target.closest('.sp-menu-btn');if(b&&b!==gb){document.body.classList.remove('view-guide');gb.classList.remove('active')}},true)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
