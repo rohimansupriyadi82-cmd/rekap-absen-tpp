@@ -2284,13 +2284,14 @@ async function merge(){save(cur);var H=SL.harian,B=SL.bulanan;if(!H.bytes||!B.by
 
 /* ---------- Panduan ---------- */
 var GUIDE='<div class="pa-head"><div><h2>Panduan Penggunaan Aplikasi</h2><p>Langkah demi langkah memakai semua menu pada aplikasi Absensi GTK • Kec. Babelan.</p></div></div>'+
-'<div class="pa-card"><h3><i class="fa-solid fa-compass"></i> 1. Mengenal menu</h3><ul><li><b>Absensi Manual GTK</b> — membuat &amp; mencetak lembar absensi bulanan/mingguan.</li><li><b>Cetak SPTJM</b> — membuat surat SPTJM dan mengunduhnya sebagai Word (F4).</li><li><b>Impor PDF &amp; TTD</b> — memasang tanda tangan, stempel, dan titimangsa pada PDF (4 tab: Satu File, Sikawan Harian, Sikawan Bulanan, Penggabungan).</li><li><b>Dashboard Administrasi, Checklist Mingguan, Backup Center, Riwayat Aktivitas</b> — ringkasan, pengingat, pencadangan data, dan catatan aktivitas.</li><li><b>Panduan Penggunaan</b> — halaman ini.</li></ul></div>'+
+'<div class="pa-card"><h3><i class="fa-solid fa-compass"></i> 1. Mengenal menu</h3><ul><li><b>Absensi Manual GTK</b> — membuat &amp; mencetak lembar absensi bulanan/mingguan.</li><li><b>Cetak SPTJM</b> — membuat surat SPTJM dan mengunduhnya sebagai Word (F4).</li><li><b>Impor PDF &amp; TTD</b> — memasang tanda tangan, stempel, dan titimangsa pada PDF (4 tab: Satu File, Sikawan Harian, Sikawan Bulanan, Penggabungan).</li><li><b>Dashboard Administrasi, Checklist Mingguan, Backup Center, Riwayat Aktivitas</b> — ringkasan, pengingat, pencadangan data, dan catatan aktivitas.</li><li><b>Impor Jam Presensi (PDF)</b> — mengisi jam datang &amp; pulang di Rekap Absensi dari file log presensi (E-Absensi).</li><li><b>Panduan Penggunaan</b> — halaman ini.</li></ul></div>'+
 '<div class="pa-card"><h3><i class="fa-solid fa-table-list"></i> 2. Absensi Manual GTK</h3><ol><li>Pada panel kiri, pilih <b>Bulan</b>, <b>Tahun</b>, <b>Minggu ke</b>, dan centang <b>Hari aktif</b>.</li><li>Isi <b>Pengesahan kepala sekolah</b> (nama &amp; gelar, NIP).</li><li>Tambah pegawai lewat <b>Tambah pegawai</b> (nama, jam datang, jam pulang), atau <b>Impor Excel</b> (unduh <b>Template</b> dahulu agar format sesuai).</li><li>Klik <b>Isi Jam Otomatis</b> untuk mengisi jam, atau <b>Kosongkan Jam</b> untuk menghapusnya. Gunakan kolom cari untuk menemukan pegawai.</li><li>Cetak lewat <b>Cetak / Simpan PDF F4</b>, atau <b>Ekspor Excel</b>. Gunakan <b>Reset Data</b> hanya bila ingin memulai dari awal.</li></ol></div>'+
 '<div class="pa-card"><h3><i class="fa-solid fa-file-signature"></i> 3. Cetak SPTJM</h3><ol><li>Lengkapi <b>Data Master Sekolah</b> (logo atau gambar kop) dan <b>Data Kepala Sekolah</b>.</li><li>Isi <b>Isian SPTJM</b>, termasuk <b>Titimangsa</b> (tombol <b>Hari ini</b> mengisi tanggal otomatis).</li><li>Periksa <b>Pratinjau</b>, lalu klik <b>Unduh Word (.docx) F4</b>.</li></ol></div>'+
 '<div class="pa-card"><h3><i class="fa-solid fa-file-pdf"></i> 4. Impor PDF &amp; TTD</h3><p><b>Langkah awal (sekali saja, tersimpan di browser dan dipakai semua tab):</b></p><ol><li>Pada kartu <b>2. Tanda tangan &amp; stempel</b>, klik <b>Unggah</b> untuk TTD Guru, TTD Kepala Sekolah, dan Stempel (PNG/JPG). Latar putih dihapus otomatis.</li><li>Atur ukuran dengan slider bila perlu (awal: TTD ±4 cm, stempel ±3,5 cm).</li><li>Pada kartu <b>3. Titimangsa</b>, centang ganti tanggal otomatis, pilih tanggal (atau <b>Gunakan hari ini</b>). Isi <b>Tempat</b> hanya jika PDF belum memiliki titimangsa.</li></ol>'+
 '<p><b>Tab Satu File</b> — untuk satu PDF apa pun: impor PDF → TTD, stempel, dan tanggal terpasang otomatis → klik <b>Unduh PDF Hasil</b>.</p><p><b>Tab Upload Sikawan Harian</b> dan <b>Upload Sikawan Bulanan</b> — cara kerjanya sama, tetapi masing-masing menyimpan file dan posisi TTD sendiri. Pindah tab tidak menghapus pekerjaan di tab lain. Unduh hasil per file dengan <b>Unduh PDF Hasil</b>.</p>'+
 '<p><b>Tab Penggabungan</b> — menggabungkan Harian + Bulanan menjadi satu PDF:</p><ol><li>Klik area unggah dan pilih kedua file sekaligus; aplikasi mengenali Harian/Bulanan dari nama file atau isi dokumen. Bisa juga mengunggah satu per satu (atau file sudah dimuat dari tab Harian/Bulanan).</li><li>Baca <b>pemeriksaan otomatis</b> tiap file: jumlah kolom terdeteksi, TTD/stempel terpasang, titimangsa. Tanda ⚠ menjelaskan apa yang kurang.</li><li>Pilih urutan (Harian dulu / Bulanan dulu), biarkan <b>Pasang TTD, stempel &amp; titimangsa otomatis</b> tercentang, isi nama file, lalu klik <b>Gabungkan &amp; Unduh PDF</b>.</li></ol>'+
 '<div class="gd-note"><b>Bila kolom tanda tangan tidak terdeteksi:</b> buka tab terkait, klik <b>Tandai kotak</b> pada Guru/Kepala Sekolah, lalu seret kotak di area tanda tangan pada pratinjau. Gambar akan masuk ke kotak itu. Posisi bisa digeser dan ukurannya ditarik lewat titik hijau; tombol × menghapus dari halaman. <b>Posisi otomatis ulang</b> mengembalikan penempatan awal.</div></div>'+
+'<div class="pa-card"><h3><i class="fa-solid fa-file-import"></i> Impor Jam Presensi (PDF)</h3><ol><li>Buka menu <b>Impor Jam Presensi (PDF)</b>, lalu klik atau seret file <b>Log Record Data Presensi</b> (boleh beberapa file, satu per pegawai).</li><li>Nama pegawai dicocokkan otomatis dengan daftar pegawai (ejaan yang mirip tetap dikenali). Jika belum cocok, pilih pegawainya lalu klik <b>Terapkan ke Rekap</b>.</li><li>Jam datang &amp; pulang langsung terisi ke Rekap Absensi sesuai tanggal. Bulan, tahun, dan minggu otomatis menyesuaikan. Mengganti minggu/bulan akan mengisi ulang sesuai tanggalnya; jam yang Anda ubah manual tersimpan per tanggal.</li><li>Minggu 1 = minggu Senin–Sabtu yang memuat hari kerja pertama bulan itu. Tanggal tanpa presensi (LL/libur) dikosongkan; jam yang tidak lengkap diberi tanda kuning di tabel pemeriksaan.</li></ol></div>'+
 '<div class="pa-card"><h3><i class="fa-solid fa-shield-halved"></i> 5. Backup &amp; keamanan data</h3><ul><li>Klik <b>Backup &amp; Unduh Sekarang</b> secara rutin (minimal seminggu sekali); pulihkan lewat <b>Restore dari File Backup</b> atau riwayat backup.</li><li>Data tersimpan di browser perangkat ini. Jangan menghapus data situs/cache tanpa backup. File PDF yang diunggah tidak disimpan permanen, tetapi gambar TTD &amp; stempel disimpan.</li></ul></div>'+
 '<div class="pa-card"><h3><i class="fa-solid fa-circle-question"></i> 6. Masalah umum</h3><ul><li><b>“Pustaka PDF gagal dimuat”</b> — menu PDF memerlukan internet saat pertama dipakai. Periksa koneksi lalu coba lagi.</li><li><b>TTD tampak kotak putih</b> — pastikan <b>Hapus latar putih otomatis</b> tercentang, lalu unggah ulang gambar.</li><li><b>Tanggal tidak berubah</b> — pastikan kotak <b>Ganti tanggal titimangsa</b> tercentang dan tanggal terisi.</li><li><b>Hasil tidak pas</b> — periksa pratinjau sebelum mengunduh, lalu geser/ubah ukuran atau gunakan <b>Tandai kotak</b>.</li></ul></div>';
 
@@ -2310,6 +2311,111 @@ function init(){if(!window.PDFSIG||!$('#pdfView')||$('#pdfMerge'))return;A=windo
  var gb=document.createElement('button');gb.type='button';gb.className='sp-menu-btn';gb.setAttribute('data-guide','1');gb.innerHTML='<i class="fa-solid fa-book-open"></i><span>Panduan Penggunaan</span>';menu.appendChild(gb);
  gb.addEventListener('click',function(){document.body.classList.remove('view-sptjm','view-pa','view-pdfsig');document.body.classList.add('view-guide');$$('.sp-menu-btn').forEach(function(b){b.classList.toggle('active',b===gb)});window.scrollTo(0,0)});
  menu.addEventListener('click',function(e){var b=e.target.closest('.sp-menu-btn');if(b&&b!==gb){document.body.classList.remove('view-guide');gb.classList.remove('active')}},true)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+<style id="pres-style">
+#presView{display:none}
+body.view-pres #presView{display:block}
+body.view-pres .main>:not(#presView){display:none!important}
+body.view-pres .sidebar>:not(.brand):not(.sp-menu-wrap):not(.side-footer){display:none!important}
+#presView .pa-card{margin-bottom:14px}#presView .pdf-drop{margin-top:4px}
+.pr-file{border:1px solid var(--pa-line);border-radius:14px;background:#fff;padding:14px;margin-bottom:12px;font-size:12.5px;line-height:1.6}
+.pr-file h4{margin:0 0 4px;font-size:14px}.pr-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.pr-meta .pa-in{width:100%}.pr-ok{color:#0b6b3a;font-weight:700}.pr-warn{background:#fcf0d2;color:#6b4a05;border-radius:8px;padding:7px 10px;margin-top:6px}
+.pr-scroll{max-height:290px;overflow:auto;border:1px solid var(--pa-line);border-radius:10px;margin-top:8px}
+.pr-scroll table{width:100%;border-collapse:collapse;font-size:12px}.pr-scroll th,.pr-scroll td{padding:5px 8px;border-bottom:1px solid #e6eee9;text-align:center}
+.pr-scroll th{position:sticky;top:0;background:#eaf2ff;color:#12296b}.pr-scroll tr.lib td{color:#8a97a8;background:#f7f9fb}.pr-scroll tr.inc td{background:#fff4d6}
+@media(max-width:700px){.pr-meta{grid-template-columns:1fr}}
+@media print{#presView{display:none!important}}
+</style>
+<script id="pres-module">
+(function(){'use strict';
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var E=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';'})},pad=function(n){return String(n).padStart(2,'0')};
+var HARI=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'],RES=[];
+function iso(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+/* Minggu ke-1 = minggu (Senin–Sabtu) yang memuat tanggal kerja pertama bulan itu (bukan hari Minggu) */
+function mon1(y,m){var d=new Date(y,m,1);if(d.getDay()===0)d=new Date(y,m,2);return new Date(y,m,d.getDate()-(d.getDay()-1))}
+function weekDates(m,y,w){var r={},M=mon1(y,m);M=new Date(M.getFullYear(),M.getMonth(),M.getDate()+7*(w-1));
+ weekdays.forEach(function(n,i){var d=new Date(M.getFullYear(),M.getMonth(),M.getDate()+i);r[n]=d.getMonth()===m?iso(d):null});return r}
+function weekOf(d){var M=mon1(d.getFullYear(),d.getMonth()),mm=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));return Math.round((mm-M)/6048e5)+1}
+function cur(){var P=state.periode;return weekDates(months.indexOf(P.bulan),+P.tahun,+P.minggu)}
+function ensure(){state.presensi=state.presensi||{}}
+/* isi tabel Rekap sesuai bulan/tahun/minggu yang sedang dipilih */
+function applyPeriode(){ensure();var D=cur(),n=0;
+ state.guru.forEach(function(g){var pr=state.presensi[g.id];if(!pr)return;state.hariAktif.forEach(function(day){var k=D[day];if(!k||!pr[k])return;state.attendance[g.id+'_'+day]={datang:pr[k].d||'',pulang:pr[k].p||''};n++})});
+ save();renderTable();return n}
+
+/* ---------- baca PDF ---------- */
+async function parsePdf(f){await window.PDFSIG.needJs();var doc=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise,lines=[];
+ for(var i=1;i<=doc.numPages;i++){var tc=await(await doc.getPage(i)).getTextContent(),its=tc.items.filter(function(t){return t.str&&t.str.trim()}).map(function(t){return{s:t.str.trim(),x:t.transform[4],y:t.transform[5]}}).sort(function(a,b){return b.y-a.y||a.x-b.x}),rows=[];
+  its.forEach(function(t){var r=rows[rows.length-1];if(r&&Math.abs(r.y-t.y)<4)r.it.push(t);else rows.push({y:t.y,it:[t]})});
+  rows.forEach(function(r){r.it.sort(function(a,b){return a.x-b.x});lines.push(r.it.map(function(t){return t.s}).join(' '))})}
+ var o={file:f.name,nama:'',nip:'',rows:[]},seen={};
+ lines.forEach(function(L){var m;if(!o.nip&&(m=/NIP\s*:\s*([\d ]{10,})/i.exec(L)))o.nip=m[1].replace(/\s+/g,'');
+  if(!o.nama&&(m=/^NAMA\s*:\s*(.+)$/i.exec(L)))o.nama=m[1].replace(/\s+/g,' ').trim();
+  m=/(?:^|\s)(\d{1,3})\s*\.\s*(\d{2})-(\d{2})-(\d{4})\b(.*)$/.exec(L);if(!m)return;
+  var key=m[4]+'-'+m[3]+'-'+m[2],rest=m[5],tm=[],re=/(\d{1,2}):(\d{2})(?::\d{2})?/g,x,d='',p='';
+  while((x=re.exec(rest)))tm.push({t:pad(x[1])+':'+x[2],h:+x[1],i:x.index,e:re.lastIndex});
+  tm.forEach(function(t,k){var seg=rest.slice(t.e,k+1<tm.length?tm[k+1].i:rest.length),a=seg.search(/datang/i),b=seg.search(/pulang/i);
+   if(a>=0&&(b<0||a<b)&&!d)d=t.t;else if(b>=0&&(a<0||b<a)&&!p)p=t.t});
+  if(!d&&!p&&tm.length){if(tm.length>1){d=tm[0].t;p=tm[1].t}else if(tm[0].h<12)d=tm[0].t;else p=tm[0].t}
+  var kode=(rest.match(/\b(LL|NL|TL|CT|DL|S|I|A)\b/g)||[]).join('/');
+  seen[key]={iso:key,d:d,p:p,kode:kode}});
+ o.rows=Object.keys(seen).sort().map(function(k){return seen[k]});return o}
+
+/* ---------- cocokkan nama ---------- */
+function norm(s){return String(s||'').toUpperCase().split(',')[0].replace(/[^A-Z ]/g,' ').replace(/\s+/g,' ').trim()}
+function lev(a,b){var m=a.length,n=b.length,d=[],i,j;for(i=0;i<=m;i++){d[i]=[i]}for(j=1;j<=n;j++)d[0][j]=j;for(i=1;i<=m;i++)for(j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
+function sim(a,b){a=norm(a);b=norm(b);if(!a||!b)return 0;return 1-lev(a,b)/Math.max(a.length,b.length)}
+function match(o){var best=null,sc=0,sec=0;state.guru.forEach(function(g){var s=(g.nip&&o.nip&&String(g.nip).replace(/\s+/g,'')===o.nip)?1:sim(g.nama,o.nama);if(s>sc){sec=sc;sc=s;best=g}else if(s>sec)sec=s});
+ return(best&&sc>=.8&&sc-sec>=.04)?best:null}
+
+/* ---------- terapkan ---------- */
+function commit(o,g){ensure();if(g==='new'){g={id:Date.now()+Math.floor(Math.random()*999),nama:o.nama,datang:'06:30',pulang:'14:00'};state.guru.push(g)}
+ g.nip=o.nip||g.nip;var pr=state.presensi[g.id]=state.presensi[g.id]||{};o.rows.forEach(function(r){pr[r.iso]={d:r.d,p:r.p,k:r.kode}});o.gid=g.id;
+ var fr=o.rows.filter(function(r){return r.d||r.p})[0]||o.rows[0];
+ if(fr){var dt=new Date(fr.iso+'T00:00:00');state.periode.bulan=months[dt.getMonth()];state.periode.tahun=String(dt.getFullYear());state.periode.minggu=String(weekOf(dt));
+  $('#bulan').value=state.periode.bulan;$('#tahun').value=state.periode.tahun;var mg=$('#minggu');if(mg){if(!$$('option',mg).some(function(op){return op.value===state.periode.minggu}))mg.add(new Option(state.periode.minggu,state.periode.minggu));mg.value=state.periode.minggu}}
+ state.guru.forEach(function(x){});resetTablePage();render();return applyPeriode()}
+
+/* ---------- tampilan ---------- */
+function say(m,bad){var e=$('#prMsg');e.textContent=m||'';e.className='pdf-msg'+(bad?' bad':'')}
+function stat(o){var n=o.rows.length,hadir=o.rows.filter(function(r){return r.d&&r.p}).length,inc=o.rows.filter(function(r){return(r.d||r.p)&&!(r.d&&r.p)}),lib=o.rows.filter(function(r){return !r.d&&!r.p}).length;return{n:n,hadir:hadir,inc:inc,lib:lib}}
+function fmt(i){var p=i.split('-');return p[2]+'-'+p[1]+'-'+p[0]}
+function card(o,idx){var s=stat(o),g=state.guru.filter(function(x){return x.id===o.gid})[0],opts='<option value="">— Pilih pegawai di Rekap —</option>'+state.guru.map(function(x){return '<option value="'+x.id+'"'+(g&&g.id===x.id?' selected':'')+'>'+E(x.nama)+'</option>'}).join('')+'<option value="new">＋ Tambahkan sebagai pegawai baru</option>';
+ return '<div class="pr-file"><h4><i class="fa-solid fa-file-pdf"></i> '+E(o.file)+'</h4><b>'+E(o.nama||'(nama tidak terbaca)')+'</b> · NIP '+E(o.nip||'-')+'<br>'+s.n+' tanggal terbaca · '+s.hadir+' hari lengkap · '+s.lib+' hari tanpa presensi (libur/LL) · '+s.inc.length+' tidak lengkap'+
+ (s.inc.length?'<div class="pr-warn">⚠ Jam tidak lengkap pada: '+E(s.inc.map(function(r){return fmt(r.iso)+' ('+(r.d?'hanya datang':'hanya pulang')+')'}).join(', '))+'. Hanya jam yang tersedia yang diisi; sisanya dikosongkan.</div>':'')+
+ '<div class="pr-meta"><div><div class="pdf-lb">Pegawai pada Rekap Absensi</div><select class="pa-in" data-pr="'+idx+'">'+opts+'</select></div><div style="display:flex;align-items:flex-end"><button type="button" class="pa-b" data-prgo="'+idx+'"><i class="fa-solid fa-wand-magic-sparkles"></i> Terapkan ke Rekap</button></div></div>'+
+ (g&&o.done?'<div class="pr-ok">✓ Sudah terisi otomatis ke Rekap atas nama '+E(g.nama)+' ('+o.done+' sel jam pada minggu yang tampil).</div>':'')+
+ '<div class="pr-scroll"><table><thead><tr><th>Minggu</th><th>Hari</th><th>Tanggal</th><th>Datang</th><th>Pulang</th><th>Kode</th></tr></thead><tbody>'+o.rows.map(function(r){var d=new Date(r.iso+'T00:00:00'),c=(!r.d&&!r.p)?'lib':(r.d&&r.p?'':'inc');return '<tr class="'+c+'"><td>'+weekOf(d)+'</td><td>'+HARI[d.getDay()]+'</td><td>'+fmt(r.iso)+'</td><td>'+(r.d||'—')+'</td><td>'+(r.p||'—')+'</td><td>'+E(r.kode)+'</td></tr>'}).join('')+'</tbody></table></div></div>'}
+function paint(){$('#prList').innerHTML=RES.map(card).join('')}
+async function load(files){files=[].slice.call(files||[]).filter(function(f){return /\.pdf$/i.test(f.name)||f.type==='application/pdf'});if(!files.length){say('Pilih file PDF log presensi.',1);return}
+ if(!window.PDFSIG){say('Modul PDF belum siap. Muat ulang halaman.',1);return}
+ try{say('Membaca PDF…');var ok=0,msg=[];
+  for(var i=0;i<files.length;i++){var o=await parsePdf(files[i]);if(!o.rows.length){msg.push(files[i].name+': tidak ada baris presensi terbaca');continue}
+   var g=match(o);RES.push(o);if(g){o.done=commit(o,g);ok++;msg.push(o.nama+' → '+g.nama+' ('+o.rows.length+' tanggal)')}else msg.push(o.nama+': nama belum cocok dengan daftar pegawai — pilih pegawai lalu klik Terapkan')}
+  paint();say(msg.join(' · ')+(ok?'. Rekap Absensi sudah terisi otomatis pada periode & minggu yang sesuai.':''),!ok)
+ }catch(e){console.error(e);say('Gagal membaca PDF: '+(e&&e.message||e),1)}}
+
+function init(){var menu=$('.sp-menu'),main=$('.main');if(!menu||!main||$('#presView'))return;
+ var v=document.createElement('section');v.id='presView';v.innerHTML='<div class="pa-head"><div><h2>Impor Jam Presensi (PDF)</h2><p>Impor “Log Record Data Presensi” — waktu datang &amp; pulang otomatis terisi ke Rekapitulasi Absensi Manual Guru sesuai tanggal dan minggunya.</p></div></div>'+
+ '<div class="pa-card"><h3><i class="fa-solid fa-file-import"></i> Impor file log presensi</h3><div class="pdf-drop" id="prDrop" tabindex="0" role="button"><i class="fa-solid fa-cloud-arrow-up"></i><b>Klik atau seret file PDF log presensi ke sini</b><span>Boleh beberapa file sekaligus (satu file per pegawai). Nama pegawai dicocokkan otomatis dengan daftar pegawai.</span></div><input type="file" id="prIn" accept="application/pdf,.pdf" multiple style="display:none"><div id="prMsg" class="pdf-msg"></div>'+
+ '<div class="pa-sub" style="margin-top:8px">Pembagian minggu: <b>Minggu 1</b> = minggu Senin–Sabtu yang memuat hari kerja pertama bulan itu; minggu berikutnya tiap 7 hari. Tanggal di luar bulan terpilih tidak dimasukkan. Jam diambil sampai menit (06:16:03 → 06:16).</div><div class="pa-actions" style="margin-top:10px"><button type="button" class="pa-b alt" id="prOpen"><i class="fa-solid fa-table-list"></i> Buka Rekap Absensi</button></div></div><div id="prList"></div>';main.appendChild(v);
+ var pb=document.createElement('button');pb.type='button';pb.className='sp-menu-btn';pb.setAttribute('data-pres','1');pb.innerHTML='<i class="fa-solid fa-file-import"></i><span>Impor Jam Presensi (PDF)</span>';var ab=$('.sp-menu-btn[data-view="absensi"]',menu);if(ab)menu.insertBefore(pb,ab);else{var gd=$('[data-guide]',menu);if(gd)menu.insertBefore(pb,gd);else menu.appendChild(pb)}
+ pb.addEventListener('click',function(){document.body.classList.remove('view-sptjm','view-pa','view-pdfsig','view-guide');document.body.classList.add('view-pres');$$('.sp-menu-btn').forEach(function(b){b.classList.toggle('active',b===pb)});window.scrollTo(0,0)});
+ menu.addEventListener('click',function(e){var b=e.target.closest('.sp-menu-btn');if(b&&b!==pb){document.body.classList.remove('view-pres');pb.classList.remove('active')}},true);
+ var dr=$('#prDrop'),fi=$('#prIn');dr.addEventListener('click',function(){fi.click()});dr.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();fi.click()}});
+ fi.addEventListener('change',function(){load(fi.files);fi.value=''});['dragover','dragenter'].forEach(function(n){dr.addEventListener(n,function(e){e.preventDefault();dr.classList.add('over')})});dr.addEventListener('dragleave',function(){dr.classList.remove('over')});dr.addEventListener('drop',function(e){e.preventDefault();dr.classList.remove('over');load(e.dataTransfer.files)});
+ $('#prOpen').addEventListener('click',function(){var a=$('.sp-menu-btn[data-view="absensi"]');if(a)a.click()});
+ v.addEventListener('click',function(e){var b=e.target.closest('[data-prgo]');if(!b)return;var i=+b.getAttribute('data-prgo'),o=RES[i],sel=$('[data-pr="'+i+'"]',v).value;if(!sel){say('Pilih pegawai pada Rekap Absensi terlebih dahulu.',1);return}
+  var g=sel==='new'?'new':state.guru.filter(function(x){return String(x.id)===sel})[0];if(!g)return;o.done=commit(o,g);paint();say('Jam presensi '+o.nama+' sudah diterapkan ke Rekap Absensi.')});
+ /* ganti periode/hari aktif → isi ulang otomatis dari data presensi; ubah manual tersimpan per tanggal */
+ ['bulan','tahun','minggu'].forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('change',applyPeriode)});var dys=document.getElementById('days');if(dys)dys.addEventListener('change',applyPeriode);
+ var st0=window.setTime;window.setTime=function(k,f,val){st0.apply(this,arguments);try{ensure();var m=/^(\d+)_(.+)$/.exec(k);if(!m)return;var pr=state.presensi[m[1]],dt=cur()[m[2]];if(pr&&dt){var e=pr[dt]=pr[dt]||{};e[f==='datang'?'d':'p']=val;save()}}catch(x){}};
+ ensure();if(state.guru&&Object.keys(state.presensi).length)applyPeriode()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
